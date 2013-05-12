@@ -7,78 +7,7 @@
 	String catname = (String) request.getParameter("catname");
 	String sku = (String) request.getParameter("sku");
 	Double price = null;
-	
-	try
-	{
-		price = Double.parseDouble(request.getParameter("price"));
-	}
-	catch(Exception e)
-	{
-	}
-
-	
-	if(action != null && action.equals("insert"))
-	{
-
-			if(proname != null && !proname.equals(""))
-			{
-				if(sku != null && !sku.equals(""))
-				{
-					if(price >= 0)
-						try {
-						statement.executeUpdate("INSERT INTO products (name, sku, category, price) VALUES ('"+proname+"', '"+sku+"', '"+catname+"','"+price.toString()+"')");
-
-						%><p style="color:green">Product <%=proname %> CREATED.</p><%
-						proname = null;
-						sku = null;
-						} catch (SQLException e) {
-						// SQL Error - mostly because of duplicate category name
-						%><p style="color:red">INSERT ERROR: Duplicate product name!</p><%
-						}
-					else
-						%><p style="color:red">INSERT ERROR: Price error!</p><%
-					
-				}
-				else
-					%><p style="color:red">INSERT ERROR: SKU error!</p><%
-			}
-			else
-				%><p style="color:red">INSERT ERROR: Product name error!</p><%
-	}
-	/*else if(action != null && action.equals("show"))
-	{
-		if(catname != null && !catname.equals(""))
-		{
-			try {
-				rs = statement.executeQuery("SELECT name,id FROM categories");
-			} catch (SQLException e) {
-			    throw new RuntimeException(e);
-			}
-		}
-	}*/
 %>
-
-<form action="?a=insert" method="POST">
-<fieldset><legend> Add a Product </legend>
-<b>Product Name: </b> <input type="text" name="proname" value="<%=proname==null?"":proname%>"><br>
-<b>Product SKU: </b> <input type="text" name="sku" value ="<%= sku==null?"":sku%>"><br>
-<b>Product Category: </b>
-	<select name = "catname">
-		<%
-		try {
-		rs = statement.executeQuery("SELECT name,id FROM categories");
-		} 		catch (SQLException e) {
-	    	throw new RuntimeException(e);
-		}
-		%>
-		<% while (rs.next()) { %>
-    	<option value="<%=rs.getInt("id")%>"><%=rs.getString("name")%></option>
-		<% } %>
- 	</select><br>
-<b>Price: </b><input type="text" name="price" value="<%=price==null?"":price %>"/><br>
-<input type="submit" name="Submit" value="Create Product">
-</fieldset>
-</form>
 
 <form action="" method="GET">
 <fieldset><legend> Search Product </legend>
