@@ -1,7 +1,7 @@
 <% String page_title="Confirmation Page"; %>
 <%@include file="header.jsp" %>
 <h2> Confirmation Page</h2>
-<<<<<<< HEAD
+
 <p/ > You just bought: 
 
 
@@ -103,6 +103,4 @@
 		    throw new RuntimeException(e);
 }
 %>
-=======
->>>>>>> a46028d92f812b4b5eae507d510e93f229df6f71
 <%@include file="footer.inc" %>
