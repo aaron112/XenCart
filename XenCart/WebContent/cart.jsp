@@ -78,7 +78,7 @@
 			{
 				String tprice = rs.getString("totalprice");
 				if ( tprice != null )
-				out.println((rs.getString("totalprice"));
+				out.println(tprice);
 			}
 			%> </td>
 </tr>	
