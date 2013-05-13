@@ -13,7 +13,7 @@
 
 <%-- Get details from Shopping Cart table from DB --%>
 
-<%
+<%--
 	try {
 		rs = statement.executeQuery(  "SELECT products.name AS proname, "
 									+ "products.price AS price_per_item, "
@@ -22,6 +22,32 @@
 									+ "FROM products "
 									+ "JOIN cart_entry "
 									+ "ON products.id = cart_entry.item "
+									);
+	} catch (SQLException e) {
+	    throw new RuntimeException(e);
+	}
+--%>
+
+<%	
+	int user_id = 0;
+	try {
+		rs = statement.executeQuery("SELECT users.id FROM users WHERE users.name = '"+user_name+"'");
+		while(rs.next())
+		{
+			user_id = rs.getInt("id");
+		}
+	} catch (SQLException e) {
+	    throw new RuntimeException(e);
+	}
+
+	try {
+		rs = statement.executeQuery(  "SELECT products.name AS proname, "
+									+ "products.price AS price_per_item, "
+									+ "cart_entry.count AS amt, "
+									+ "(products.price * cart_entry.count) AS amtprice "
+									+ "FROM products, cart_entry "
+									+ "WHERE products.id=cart_entry.item "
+									+ "AND cart_entry.owner = '"+user_id+"';"
 									);
 	} catch (SQLException e) {
 	    throw new RuntimeException(e);
@@ -60,9 +86,9 @@
 	try {
 		rs = statement.executeQuery(  "SELECT "
 									+ "SUM(products.price * cart_entry.count) AS totalprice "
-									+ "FROM products "
-									+ "JOIN cart_entry "
-									+ "ON products.id = cart_entry.item"
+									+ "FROM products, cart_entry "
+									+ "WHERE products.id = cart_entry.item "
+									+ "AND cart_entry.owner = '"+user_id+"';"
 									);
 	} catch (SQLException e) {
 	    throw new RuntimeException(e);
