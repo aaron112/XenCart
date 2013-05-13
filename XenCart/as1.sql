@@ -1,4 +1,4 @@
-﻿CREATE TABLE roles (
+CREATE TABLE roles (
    id		SERIAL PRIMARY KEY,
    name		TEXT NOT NULL
 );
@@ -37,7 +37,6 @@ CREATE TABLE cart_entry (
    item		INTEGER REFERENCES products (id) NOT NULL,
    count	INTEGER NOT NULL
 );
-
 
 COPY roles (id, name) FROM stdin;
 1	owner

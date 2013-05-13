@@ -6,28 +6,6 @@
 <h2> Shopping Cart</h2>
 
 
-
-
-
-<%-- Show table of Shopping Cart --%>
-
-<%-- Get details from Shopping Cart table from DB --%>
-
-<%--
-	try {
-		rs = statement.executeQuery(  "SELECT products.name AS proname, "
-									+ "products.price AS price_per_item, "
-									+ "cart_entry.count AS amt, "
-									+ "(products.price * cart_entry.count) AS amtprice "
-									+ "FROM products "
-									+ "JOIN cart_entry "
-									+ "ON products.id = cart_entry.item "
-									);
-	} catch (SQLException e) {
-	    throw new RuntimeException(e);
-	}
---%>
-
 <%	
 	int user_id = 0;
 	try {
@@ -40,6 +18,7 @@
 	    throw new RuntimeException(e);
 	}
 
+	// Get values from shopping cart rows associated with the user.
 	try {
 		rs = statement.executeQuery(  "SELECT products.name AS proname, "
 									+ "products.price AS price_per_item, "
@@ -82,6 +61,7 @@
 %>
 
 
+<%-- Calculate the total price of the users shopping cart --%>
 <%
 	try {
 		rs = statement.executeQuery(  "SELECT "
@@ -95,6 +75,8 @@
 	}
 %>
 
+
+<%-- Display the total price --%>
 <tr>
 	<td style = "border: 0px">  </td>
 	<td style = "border: 0px">  </td>
@@ -111,22 +93,23 @@
 </table>	
 
 <%-- Insert credit card/purchase action --%>
-
+<%-- Check valid credit card number ? --%>
+<%-- If purchased is pressed, move go to confirm jsp --%>
 <%
-	//String action = (String)request.getParameter("a");
-	String ccNum = (String)request.getParameter("ccNum");
+	String action = (String) request.getParameter("a");
+	String ccnum = (String)request.getParameter("ccnum");
+	boolean confirmed = false;
 %>
 
 
 <form action ="confirm.jsp" name = "purchase" method="POST">
 	<br/>
 	<b>Credit Card Number: </b>
-	<input type = "text" name = "ccNum" size ="24" value="<%= ccNum==null?"":ccNum %>">
+	<input type = "text" name = "ccnum" size ="24" value="<%= ccnum==null?"":ccnum %>">
 	
-	<input type = "submit" name = "Purchase" value = "Purchase">
+	<input type = "submit" name = "Purchase" value = "Purchase" ">
 	
 </form>
-
 
 
 <%@include file="footer.inc" %>
