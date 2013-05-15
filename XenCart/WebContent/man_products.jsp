@@ -1,6 +1,7 @@
 <% String page_title="Manage Products"; %>
 <%@include file="header.jsp" %>
-
+<%@page import="java.util.*" %>
+<h2>Manage Products</h2>
 <%
 	//Parse the incoming parameters first
 	String action = (String) request.getParameter("a");
@@ -10,9 +11,10 @@
 	String price = (String) request.getParameter("price");
 	String submit = (String) request.getParameter("Submit");
 	String pid = (String) request.getParameter("pid");
-	String[] cat = new String[100]; 
-
-
+	//String[] cat = new String[100]; 			// This is stupid....
+	LinkedHashMap<Integer, String> categories = new LinkedHashMap<Integer, String>();
+	
+	
 	//When the owner wants to insert a new product
 	if(action != null && action.equals("insert"))
 	{
@@ -96,15 +98,15 @@
 				//check product name
 			
 			try {
+				// Remove from this product from all carts first!
+				statement.executeUpdate("DELETE FROM cart_entry WHERE item = '"+pid+"'");
 				statement.executeUpdate("DELETE FROM products WHERE id = '"+pid+"'");
-				//statement.executeUpdate("UPDATE categories SET products=((SELECT products FROM categories WHERE id = '"+catid+"') - 1) WHERE id = '"+catid+"'");
 				%><p style="color:green">Product <%=proname %> DELETED.</p><%
 				
-				} catch (SQLException e) {
+			} catch (SQLException e) {
 				// SQL Error - mostly because of duplicate category name
-				
-				%><p style="color:red">DELETE ERROR: Product not found!</p><%
-				}
+				%><p style="color:red">DELETE ERROR: Product ID '<%=pid %>' not found!</br>SQL Error: <%=e %></p><%
+			}
 			submit = "Search";
 			catid = null;
 			proname = null;
@@ -113,6 +115,27 @@
 	
 %>
 
+<%-- Big formatting table --%>
+<table width="99%"><tr><td valign="top">
+<h3>Categories:</h3>
+<%-- Categories list on the left --%>
+<a href="?<%=proname!=null?"proname="+proname:"" %>">All</a></br>
+<%
+	try {
+		rs = statement.executeQuery("SELECT name,id FROM categories ORDER BY id ASC");
+	} catch (SQLException e) {
+		throw new RuntimeException(e);
+	}
+	
+	while ( rs.next() ) {
+		// Save result up to a HashMap
+		categories.put(rs.getInt("id"), rs.getString("name"));
+		
+		%><a href="?catid=<%=rs.getInt("id")%><%=proname!=null?"&proname="+proname:"" %>"><%=rs.getString("name") %></a></br><%
+	}
+%>
+</td>
+<td>
 <%-- Form for owner to insert products --%>
 <form action="?a=insert" method="POST">
 <fieldset><legend> Add a Product </legend>
@@ -122,10 +145,9 @@
 	<select name = "catid">
 		<%
 		try {
-		rs = statement.executeQuery("SELECT name,id FROM categories ORDER BY id ASC");
-		
-		} 		catch (SQLException e) {
-	    	throw new RuntimeException(e);
+			rs = statement.executeQuery("SELECT name,id FROM categories ORDER BY id ASC");
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
 		}
 		%>
 		<% while (rs.next()) { %>
@@ -137,75 +159,47 @@
 </fieldset>
 </form>
 </br>
-</br>
 
 <%-- Form for searching a product --%>
 <form action="" method="GET">
 <fieldset><legend> Search Product </legend>
-<b>Product Name: </b> <input type="text" name="proname" value=""><br>
-<b>Product Category: </b>
-	<select name = "catid">
-		<%
-		try {
-		rs = statement.executeQuery("SELECT name,id FROM categories ORDER BY id ASC");
-		} 		catch (SQLException e) {
-	    	throw new RuntimeException(e);
-		}
-		%>
-		<option value="0"> All </option>
-		<% while (rs.next()) { 
-			cat[rs.getInt("id")] = rs.getString("name"); %>
-    	<option value="<%=rs.getInt("id")%>"><%=rs.getString("name")%></option>
-		<% } %>
- 	</select><br>
-<input type="submit" name="Submit" value="Search">
+<input type="hidden" value="<%=catid==null?"":catid %>" name="catid"/>
+<b>Product Name: </b> <input type="text" name="proname" value="<%=proname==null?"":proname %>">
+<input type="submit" value="Search">
 </fieldset>
 </form>
-</br>
-</br>
+<br><hr><br>
 
 <%
-	//Search for product
-   if((submit != null && submit.equals("Search")) || action == null)
-   {
-   		//Case 1: product name and category name provided
-   		if(proname != null && !proname.equals("") && !catid.equals("0"))
-   		{
-   			try {
-      			rs = statement.executeQuery("SELECT products.id,sku,price,products.name AS proname, categories.name AS catid FROM products JOIN categories ON (products.category = categories.id) WHERE (categories.id = '"+catid+"') AND (lower(products.name) LIKE '%"+proname.toLowerCase()+"%') ORDER BY products.id ASC");
-      			}
-			catch (SQLException e) {
-      	    	throw new RuntimeException(e);
-      		}
-   		}
-		//Case 2: category name provided
-   		else if(catid != null && !catid.equals("0"))
-   		{
-   		try {
-   			rs = statement.executeQuery("SELECT products.id,sku,price,products.name AS proname, categories.name AS catid FROM products JOIN categories ON (products.category = categories.id) WHERE (categories.id = '"+catid+"') ORDER BY products.id ASC");
-   			} 		catch (SQLException e) {
-   	    		throw new RuntimeException(e);
-   			}
-   		}
-		//Case 3: product name provided
-   		else if(proname != null && !proname.equals("0"))
-   		{
-   			try {
-      			rs = statement.executeQuery("SELECT products.id,sku,price,products.name AS proname, categories.name AS catid FROM products JOIN categories ON (products.category = categories.id) WHERE (lower(products.name) LIKE '%"+proname.toLowerCase()+"%') ORDER BY products.id ASC");
-      			} 		catch (SQLException e) {
-      	    	throw new RuntimeException(e);
-      			}
-   		}
-		//Case 4: nothing provided, search ALL
-   		else
-		{
-   			try {
-   				rs = statement.executeQuery("SELECT products.id,sku,price,products.name AS proname, categories.name AS catid FROM products JOIN categories ON (products.category = categories.id) ORDER BY products.id ASC");
-   				} 		catch (SQLException e) {
-   	    			throw new RuntimeException(e);
-   				}
-   		}
-
+	// Search for product
+    if((submit != null && submit.equals("Search")) || action == null) {
+    	// Build Query
+    	boolean criteriaSpecified = false;
+    	String sqlquery = "SELECT * FROM products ";
+    	if ( (catid == null || catid.equals("")) && (proname == null || proname.equals("")) ) {
+    		// No search criteria specified
+    	} else {
+    		sqlquery += "WHERE ";
+    		if ( catid != null && !catid.equals("") && !catid.equals("null") ) {
+    			// Category ID specified
+			    sqlquery += "category = '"+catid+"'";
+			    criteriaSpecified = true;
+		    }
+		   
+    		if ( proname != null && !proname.equals("") && !proname.equals("null") ) {
+			    if ( criteriaSpecified )
+				    sqlquery += " AND ";
+			    // Product name specified
+			    sqlquery += "LOWER(name) LIKE '%"+proname.toLowerCase()+"%'";
+		    }
+	    }
+	    sqlquery += " ORDER BY id ASC";
+	   
+	    try {
+	    	rs = statement.executeQuery(sqlquery);
+	    } catch (SQLException e) {
+ 	    	throw new RuntimeException(e);
+ 		}
 %>
 	<%-- Tables showing the searched products --%>
 	<table border = "1" width = "99%">
@@ -217,35 +211,28 @@
 			<th>Product Price</th>
 			<th>Action</th>
 		</tr>
-	<%
-	while ( rs.next() )
-	{
-		int i = 1;
-	%>
+	<% while ( rs.next() ) { %>
+	<form action="?a=UPDATE" method="POST">
 		<tr>
-			<form action="?a=UPDATE" method="POST">
     		<td> <input type="hidden" value="<%=rs.getString("id")%>" name="pid"/><%=rs.getString("id")%></td>
         	<td> <input value="<%=rs.getString("sku")%>" name="sku"/></td>
-        	<td> <input value="<%=rs.getString("proname")%>" name="proname"/></td>
+        	<td> <input value="<%=rs.getString("name")%>" name="proname"/></td>
         	<td> 
         		<select name="catid">
-        		<% while (i < cat.length) { 
-        			if(cat[i] == null)
-        			{
-        				i++;
-        				continue;
-        			}%>
-    			<option <% if(cat[i].equals(rs.getString("catid"))) out.println("selected = \"selected\""); else out.println(""); %> value="<%=i%>"><%=cat[i]%></option>
-				<% i++; } %>
+        		<%
+        		for (Map.Entry<Integer, String> entry : categories.entrySet()) {
+        			%> <option value="<%=entry.getKey()%>" <%=entry.getKey()==rs.getInt("category")?"selected":"" %>><%=entry.getValue() %> <%
+        		}
+        		%>
 				</select>
         	</td>
         	<td> <input value="<%=rs.getString("price")%>" name="price"/></td>
         	<td> 
         		<input type="submit" value="UPDATE">
-        		<input type="button" value="DELETE" onClick="javascript:location.href='?a=DELETE&pid=<%=rs.getString("id")%>&proname=<%=rs.getString("proname")%>'">
+        		<input type="button" value="DELETE" onClick="javascript:location.href='?a=DELETE&pid=<%=rs.getString("id")%>&proname=<%=rs.getString("name")%>'">
         	</td>
-        	</form>
     	</tr>
+    </form>
 	<%
 	}
 	%>
@@ -253,4 +240,5 @@
 	<%
    	}
 	%>
+</td></tr></table>
 <%@include file="footer.inc" %>

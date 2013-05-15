@@ -29,8 +29,8 @@
 		try {
 			parsed_deleteid = Integer.parseInt(deleteid);
 			// Check if products = 0
-			rs = statement.executeQuery("SELECT products FROM categories WHERE id = "+parsed_deleteid);
-			if ( rs.next() && rs.getInt("products") < 1 ) {
+			rs = statement.executeQuery("SELECT count(*) AS count FROM products WHERE category = '"+parsed_deleteid+"'");
+			if ( rs.next() && rs.getInt("count") < 1 ) {
 				if ( statement.executeUpdate("DELETE FROM categories WHERE id = "+parsed_deleteid) == 0 ) {
 					%><p style="color:red">DELETE ERROR: Category ID does not exist.</p><%
 				} else {
@@ -57,15 +57,15 @@
 <br><hr><br>
 <%
 	try {
-		rs = statement.executeQuery("SELECT * FROM categories");
+		rs = statement.executeQuery("SELECT categories.id, categories.name, description, ( SELECT count(*) FROM products WHERE category = categories.id ) AS count FROM categories");
 	} catch (SQLException e) {
 	    throw new RuntimeException(e);
 	}
 %>
-<table border='1' width="99%"><tr><td><b>ID</b></td><td><b>Name</b></td><td><b>Description</b></td><td><b>Products</b></td><td><b>Actions</b></td></tr>
+<table border='1' width="99%"><tr><td><b>ID</b></td><td><b>Name</b></td><td><b>Description</b></td><td><b>Product Count</b></td><td><b>Actions</b></td></tr>
 <%
 	while ( rs.next() )
-		out.println("<tr><td>"+rs.getString("id")+"</td><td>"+rs.getString("name")+"</td><td>"+rs.getString("description")+"</td><td>"+rs.getString("products")+"</td><td>"+ ((rs.getInt("products")>0)?"":"<a href=\"?a=delete&did="+rs.getString("id")+"\"><b>DELETE</b></a>") +"</td></tr>");
+		out.println("<tr><td>"+rs.getString("id")+"</td><td>"+rs.getString("name")+"</td><td>"+rs.getString("description")+"</td><td>"+rs.getString("count")+"</td><td>"+ ((rs.getInt("count")>0)?"":"<a href=\"?a=delete&did="+rs.getString("id")+"\"><b>DELETE</b></a>") +"</td></tr>");
 %>
 </table>
 
