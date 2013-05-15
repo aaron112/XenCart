@@ -127,8 +127,8 @@
 			<th>Product Name</th>
 			<th>Product Category</th>
 			<th>Product Price</th>
-            <th>Amount</th>
-            <th>Add to Cart</th>
+            <th>Quantity</th>
+            <th>Actions</th>
 		</tr>
 	<%
 	while ( rs.next() )
@@ -141,7 +141,7 @@
         	<td> <input type = "hidden" value="<%=rs.getString("sku")%>" name="sku"/><%=rs.getString("sku")%></td>
         	<td> <input type = "hidden" value="<%=rs.getString("name")%>" name="proname"/><%=rs.getString("name")%></td>
         	<td> <input type = "hidden" value="<%=rs.getString("category")%>" name="catname"/><%=rs.getString("category")%></td>
-        	<td> <input type = "hidden" value="<%=rs.getString("price")%>" name="price"/><%=rs.getString("price")%></td>
+        	<td> <input type = "hidden" value="<%=rs.getString("price")%>" name="price"/>$<%=rs.getString("price")%></td>
             <td> <input type="number" min="0" name="quantity" value="0"/></td>
             <td> <input type="submit" value="ADD TO CART"/> </td> 
             </form>

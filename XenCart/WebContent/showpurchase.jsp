@@ -56,7 +56,7 @@
 				+rs.getString("price_per_item")
 				+"</td><td>"
 				+rs.getInt("amt")
-				+"</td><td>"
+				+"</td><td>$"
 				+rs.getString("amtprice")
 				+"</td>"
 				);

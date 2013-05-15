@@ -227,7 +227,7 @@
         		%>
 				</select>
         	</td>
-        	<td> <input value="<%=rs.getString("price")%>" name="price"/></td>
+        	<td> $<input value="<%=rs.getString("price")%>" name="price"/></td>
         	<td> 
         		<input type="submit" value="UPDATE">
         		<input type="button" value="DELETE" onClick="javascript:location.href='?a=DELETE&pid=<%=rs.getString("id")%>&proname=<%=rs.getString("name")%>'">
