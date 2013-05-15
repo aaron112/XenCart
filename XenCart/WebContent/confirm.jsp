@@ -2,11 +2,12 @@
 <%@include file="header.jsp" %>
 <h2> Confirmation Page</h2>
 
-<p/ > You just bought: 
-
+<p/ > <b>Thank you for your purchase! Here is your order:</b>
 
 <%-- Does the same thing as cart.jsp? Is this bad? :( --%>
 <%@include file="showpurchase.jsp" %>
+<br/>
+<b><a href="index.jsp">Click here to return to main page.</a></b>
 
 <%-- Delete values from shopping cart after displaying them --%>
 <% 
