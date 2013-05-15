@@ -18,18 +18,7 @@
 --%>
 
 
-<%	
-	int user_id = 0;
-	try {
-		rs = statement.executeQuery("SELECT users.id FROM users WHERE users.name = '"+user_name+"'");
-		while(rs.next())
-		{
-			user_id = rs.getInt("id");
-		}
-	} catch (SQLException e) {
-	    throw new RuntimeException(e);
-	}
-
+<%
 	// Get values from shopping cart rows associated with the user.
 
 
@@ -50,10 +39,10 @@
 <%-- Show shopping cart table --%>
 <table border = '1' width = "99%">
 	<tr>
-		<td> Product </td>
-		<td> Price </td>
-		<td> Quantity </td>
-		<td> Quantity * Price </td>
+		<th> Product </th>
+		<th> Price </th>
+		<th> Quantity </th>
+		<th> Amount </th>
 	</tr>
 
 
@@ -95,14 +84,14 @@
 <tr>
 	<td style = "border: 0px">  </td>
 	<td style = "border: 0px">  </td>
-	<td align = "right" style = "border: 0px">Total:</td>
-	<td> <% 
+	<td align = "right" style = "border: 0px"><b>Total:</b></td>
+	<td> <b><% 
 			while ( rs.next() )
 			{
 				String tprice = rs.getString("totalprice");
 				if ( tprice != null )
 				out.println(tprice);
 			}
-			%> </td>
+			%> </b></td>
 </tr>	
 </table>	

@@ -1,6 +1,7 @@
 <% String page_title="Products"; %>
 <%@include file="header.jsp" %>
 
+<h2>Show Products</h2>
 <%
 	//Parse the parameters coming in
 	String action = (String) request.getParameter("a");
