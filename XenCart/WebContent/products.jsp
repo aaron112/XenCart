@@ -1,6 +1,6 @@
 <% String page_title="Products"; %>
 <%@include file="header.jsp" %>
-
+<%@page import="java.util.*" %>
 <h2>Show Products</h2>
 <%
 	//Parse the parameters coming in
@@ -11,6 +11,7 @@
 	String pid = (String) request.getParameter("pid");
 	String quantity = (String) request.getParameter("quantity");
 	String submit = (String) request.getParameter("Submit");
+	LinkedHashMap<Integer, String> categories = new LinkedHashMap<Integer, String>();
 	
 	//When the user wants to add products to the shopping cart
 	if(action != null && action.equals("add"))
@@ -71,6 +72,9 @@
 	}
 	
 	while ( rs.next() ) {
+		// Save result up to a HashMap
+		categories.put(rs.getInt("id"), rs.getString("name"));
+		
 		%><a href="?catid=<%=rs.getInt("id")%><%=proname!=null?"&proname="+proname:"" %>"><%=rs.getString("name") %></a></br><%
 	}
 %>
@@ -123,10 +127,10 @@
 	<table border = "1" width = "99%">
 		<tr>
 			<th>Product ID</th>
-			<th>Product SKU</th>
-			<th>Product Name</th>
-			<th>Product Category</th>
-			<th>Product Price</th>
+			<th>SKU</th>
+			<th>Name</th>
+			<th>Category</th>
+			<th>Unit Price</th>
             <th>Quantity</th>
             <th>Actions</th>
 		</tr>
@@ -140,7 +144,7 @@
     		<td> <input type = "hidden" value="<%=rs.getString("id")%>" name="pid"/><%=rs.getString("id")%></td>
         	<td> <input type = "hidden" value="<%=rs.getString("sku")%>" name="sku"/><%=rs.getString("sku")%></td>
         	<td> <input type = "hidden" value="<%=rs.getString("name")%>" name="proname"/><%=rs.getString("name")%></td>
-        	<td> <input type = "hidden" value="<%=rs.getString("category")%>" name="catname"/><%=rs.getString("category")%></td>
+        	<td> <input type = "hidden" value="<%=rs.getString("category")%>" name="catname"/><%=categories.get( rs.getInt("category") )%></td>
         	<td> <input type = "hidden" value="<%=rs.getString("price")%>" name="price"/>$<%=rs.getString("price")%></td>
             <td> <input type="number" min="0" name="quantity" value="0"/></td>
             <td> <input type="submit" value="ADD TO CART"/> </td> 

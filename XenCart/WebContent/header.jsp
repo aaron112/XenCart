@@ -70,6 +70,20 @@ td {
 .menulinkinfo {
 	font-size: 9pt;
 }
+
+table { border-width: 0px;
+	border-spacing: 2px;
+	border-style: dashed;
+	border-color: gray;
+	border-collapse: separate;
+	background-color: white; }
+
+table td, table th { border-width: 1px;
+	padding: 3px;
+	border-style: dashed;
+	border-color: gray;
+	background-color: white;
+	-moz-border-radius: }
 </style>
 </head>
 <body>

@@ -11,7 +11,7 @@
 	String price = (String) request.getParameter("price");
 	String submit = (String) request.getParameter("Submit");
 	String pid = (String) request.getParameter("pid");
-	//String[] cat = new String[100]; 			// This is stupid....
+	//String[] cat = new String[100]; 			// Why do this.....
 	LinkedHashMap<Integer, String> categories = new LinkedHashMap<Integer, String>();
 	
 	
@@ -206,11 +206,11 @@
 	<table border = "1" width = "99%">
 		<tr>
 			<th>Product ID</th>
-			<th>Product SKU</th>
-			<th>Product Name</th>
-			<th>Product Category</th>
-			<th>Product Price</th>
-			<th>Action</th>
+			<th>SKU</th>
+			<th>Name</th>
+			<th>Category</th>
+			<th>Unit Price</th>
+			<th>Actions</th>
 		</tr>
 	<% while ( rs.next() ) { %>
 	<form action="?a=UPDATE" method="POST">
