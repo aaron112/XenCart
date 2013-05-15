@@ -5,7 +5,7 @@
 <b>Thank you for your purchase! Here is your order:</b><br/><br/>
 
 <%-- Does the same thing as cart.jsp? Is this bad? :( --%>
-<%@include file="showpurchase.jsp" %>
+<%@include file="showpurchase.inc" %>
 <br/>
 <b>Charged to Credit Card: <%=request.getParameter("ccNum") %></b>
 <hr/>

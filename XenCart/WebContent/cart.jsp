@@ -11,7 +11,7 @@
 <%-- Begin Shopping Cart Page --%>
 <h2> Shopping Cart</h2>
 
-<%@include file="showpurchase.jsp" %>
+<%@include file="showpurchase.inc" %>
 
 <%-- Insert credit card/purchase action --%>
 <%-- Check valid credit card number ? --%>
