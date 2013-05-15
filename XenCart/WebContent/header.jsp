@@ -74,13 +74,15 @@ td {
 <h1>XenCart</h1>
 Welcome, <%=user_name==null?"Guest":user_name%>!
 <hr>
-<b><a href="login.jsp">Login</a> | </b>
 <% if (user_role == 0) { %>
+<b><a href="login.jsp">Login</a> | </b>
 <b><a href="signup.jsp">Sign-up</a></b>
 <% } else if (user_role == 1) { %>
+<b><a href="login.jsp?a=logout">Logout</a> | </b>
 <b><a href="man_categories.jsp">Manage Categories</a></b> |
 <b><a href="man_products.jsp">Manage Products</a></b>
 <% } else { %>
+<b><a href="login.jsp?a=logout">Logout</a> | </b>
 <b><a href="products.jsp">Browse Products</a></b> |
 <b><a href="cart.jsp">View Shopping Cart</a></b>
 <% } %>
