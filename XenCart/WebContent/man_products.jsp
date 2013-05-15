@@ -161,14 +161,15 @@
 </br>
 
 <%-- Form for searching a product --%>
-<form action="" method="GET">
+<form name="search" action="" method="GET">
 <fieldset><legend> Search Product </legend>
 <input type="hidden" value="<%=catid==null?"":catid %>" name="catid"/>
-<b>Product Name: </b> <input type="text" name="proname" value="<%=proname==null?"":proname %>">
+<b>Partial Product Name: </b> <input type="text" name="proname" value="<%=proname==null?"":proname %>">
 <input type="submit" value="Search">
+<input type="button" value="Clear" onClick="javascript:location.href='?<%=catid==null?"":"catid="+catid %>'">
 </fieldset>
 </form>
-<br><hr><br>
+<br/><hr/><br/>
 
 <%
 	// Search for product
