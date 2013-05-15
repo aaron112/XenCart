@@ -1,19 +1,22 @@
-<% String page_title="Manage Products"; %>
+<% String page_title="Products"; %>
 <%@include file="header.jsp" %>
 
 <%
+	//Parse the parameters coming in
 	String action = (String) request.getParameter("a");
 	String proname = (String) request.getParameter("proname");
 	String catname = (String) request.getParameter("catname");
 	String sku = (String) request.getParameter("sku");
 	String pid = (String) request.getParameter("pid");
-	Double price = null;
+	String quantity = (String) request.getParameter("quantity");
+	String submit = (String) request.getParameter("Submit");
 	
+	//When the user wants to add products to the shopping cart
 	if(action != null && action.equals("add"))
 	{
 		if(pid != null && !pid.equals(""))
 		{
-			int user_id = 0, quantity = 0;
+			int user_id = 0, count = 0;
 			boolean bought = false;
 			
 			try {
@@ -29,12 +32,13 @@
 			try {
 				rs = statement.executeQuery("SELECT item,count FROM cart_entry WHERE owner = '"+user_id+"';");
 				
+				//Checks if it is already in cart_entry, bought=true if yes, false otherwise
 				while(rs.next())
 				{
 					if(rs.getInt("item") == Integer.parseInt(pid))
 					{
 						bought = true;
-						quantity = rs.getInt("count");
+						count = rs.getInt("count") + Integer.parseInt(quantity);
 						break;
 					}
 				}
@@ -42,40 +46,53 @@
 			    throw new RuntimeException(e);
 			}
 			
+			//If bought==true, initiate UPDATE instead of INSERT
 			if(bought == true)
 			{
 				try {
-					statement.executeUpdate("UPDATE cart_entry SET count = "+(++quantity)+" WHERE item = "+pid+"");
-					pid = null;
-					proname = null;
-					%><p style="color:green">UPDATED to Cart</p><%
+					statement.executeUpdate("UPDATE cart_entry SET count = "+count+" WHERE item = "+pid+"");
+					
+					%><p style="color:green">UPDATED <%=proname %> to Cart</p><%
 								
+					proname = null;
+					catname = null;
 					
 				} catch (SQLException e) {
 					// SQL Error - mostly because of duplicate category name
 					%><p style="color:red">UPDATE ERROR: Cannot find product</p><%
 				}
 			}
-			else
+			else if(Integer.parseInt(quantity) != 0)
 			{
 			try {
-				statement.executeUpdate("INSERT INTO cart_entry (owner,item,count) VALUES ('"+user_id+"', '"+pid+"', '1')");
+				statement.executeUpdate("INSERT INTO cart_entry (owner,item,count) VALUES ('"+user_id+"', '"+pid+"', "+quantity+")");
 
-				%><p style="color:green">INSERTED to Cart</p><%
-				pid = null;
+				%><p style="color:green">INSERTED <%= proname %> to Cart</p><%
+				
 				proname = null;
+				catname = null;
+
 			} catch (SQLException e) {
 				// SQL Error - mostly because of duplicate category name
 				%><p style="color:red">INSERT ERROR: Product exists</p><%
 			}
 			}
+			else
+			{
+				%><p style="color:red">ADD ERROR: Cannot add 0 products</p><%
+				
+				proname = null;
+				catname = null;
+			}
 		}
 	}
 %>
 
+<%-- Form for searching a particular product --%>
+
 <form action="" method="GET">
 <fieldset><legend> Search Product </legend>
-<b>Product Name: </b> <input type="text" name="proname" value="<%=proname==null?"":proname%>"><br>
+<b>Product Name: </b> <input type="text" name="proname"><br>
 <b>Product Category: </b>
 	<select name = "catname">
 		<%
@@ -96,56 +113,80 @@
 
 
 <%
-   if(request.getParameter("Submit") != null && request.getParameter("Submit").equals("Search") && !catname.equals("0"))
+	//Show search result if first visit page or submit serach query
+   if((submit != null && submit.equals("Search")) || action == null || action.equals("add"))
    {
-   	if(proname != null && !proname.equals(""))
-   	{
-   		try {
-      		rs = statement.executeQuery("SELECT products.id,sku,price,products.name AS proname, categories.name AS catname FROM products JOIN categories ON (products.category = categories.id) WHERE (categories.id = '"+catname+"') AND (lower(products.name) LIKE '%"+proname.toLowerCase()+"%')");
-      		} 		catch (SQLException e) {
+   		//Case 1: Product name and Category provided
+   		if(proname != null && !proname.equals("") && !catname.equals("0"))
+   		{
+   			try {
+      			rs = statement.executeQuery("SELECT products.id,sku,price,products.name AS proname, categories.name AS catname FROM products JOIN categories ON (products.category = categories.id) WHERE (categories.id = '"+catname+"') AND (lower(products.name) LIKE '%"+proname.toLowerCase()+"%')");
+      			}
+			catch (SQLException e) {
       	    	throw new RuntimeException(e);
       		}
-   	}
-   	else
-   	{
-   	try {
-   		rs = statement.executeQuery("SELECT products.id,sku,price,products.name AS proname, categories.name AS catname FROM products JOIN categories ON (products.category = categories.id) WHERE (categories.id = '"+catname+"')");
-   		} 		catch (SQLException e) {
-   	    	throw new RuntimeException(e);
    		}
-   	}
-   }
-	
-   else
-   {
-   	if(proname != null && !proname.equals(""))
-   	{
+		//Case 2: Category provided
+   		else if(catname != null && !catname.equals("0"))
+   		{
    		try {
-      		rs = statement.executeQuery("SELECT products.id,sku,price,products.name AS proname, categories.name AS catname FROM products JOIN categories ON (products.category = categories.id) WHERE (lower(products.name) LIKE '%"+proname.toLowerCase()+"%')");
-      		} 		catch (SQLException e) {
-      	    	throw new RuntimeException(e);
-      		}
-   	}
-   	else
-   	try {
-   		rs = statement.executeQuery("SELECT products.id,sku,price,products.name AS proname, categories.name AS catname FROM products JOIN categories ON (products.category = categories.id)");
-   		} 		catch (SQLException e) {
-   	    	throw new RuntimeException(e);
+   			rs = statement.executeQuery("SELECT products.id,sku,price,products.name AS proname, categories.name AS catname FROM products JOIN categories ON (products.category = categories.id) WHERE (categories.id = '"+catname+"')");
+   			} 		catch (SQLException e) {
+   	    		throw new RuntimeException(e);
+   			}
    		}
-   }
+		//Case 3: Product provided
+   		else if(proname != null && !proname.equals("0"))
+   		{
+   			try {
+      			rs = statement.executeQuery("SELECT products.id,sku,price,products.name AS proname, categories.name AS catname FROM products JOIN categories ON (products.category = categories.id) WHERE (lower(products.name) LIKE '%"+proname.toLowerCase()+"%')");
+      			} 		catch (SQLException e) {
+      	    	throw new RuntimeException(e);
+      			}
+   		}
+		//Case4: Nothing provided, search All products
+   		else
+		{
+   			try {
+   				rs = statement.executeQuery("SELECT products.id,sku,price,products.name AS proname, categories.name AS catname FROM products JOIN categories ON (products.category = categories.id)");
+   				} 		catch (SQLException e) {
+   	    			throw new RuntimeException(e);
+   				}
+   		}
 %>
-<table border = "1" width = "99%">
-	<tr>
-	<th>Product ID</th>
-	<th>Product SKU</th>
-	<th>Product Name</th>
-	<th>Product Category</th>
-	<th>Product Price</th>
-	<th>Add Product to Cart</th>
-	</tr>
+	<%-- Table showing the search products, added ability to buy them --%>
+	<table border = "1" width = "99%">
+		<tr>
+			<th>Product ID</th>
+			<th>Product SKU</th>
+			<th>Product Name</th>
+			<th>Product Category</th>
+			<th>Product Price</th>
+            <th>Amount</th>
+            <th>Add to Cart</th>
+		</tr>
 	<%
 	while ( rs.next() )
-		out.println("<tr><td>"+rs.getString("id")+"</td><td>"+rs.getString("sku")+"</td><td>"+rs.getString("proname")+"</td><td>"+ rs.getString("catname")+"</td><td>" + rs.getString("price")+"</td><td><a href=\"?a=add&pid="+rs.getString("id")+"&proname="+rs.getString("proname")+"\">ADD TO CART</a></td>");
+	{
 	%>
-</table>
+		<tr>
+        	<form action="products.jsp" method="POST">
+            <input type="hidden" name="a" value="add"/>
+    		<td> <input type = "hidden" value="<%=rs.getString("id")%>" name="pid"/><%=rs.getString("id")%></td>
+        	<td> <input type = "hidden" value="<%=rs.getString("sku")%>" name="sku"/><%=rs.getString("sku")%></td>
+        	<td> <input type = "hidden" value="<%=rs.getString("proname")%>" name="proname"/><%=rs.getString("proname")%></td>
+        	<td> <input type = "hidden" value="<%=rs.getString("catname")%>" name="catname"/><%=rs.getString("catname")%></td>
+        	<td> <input type = "hidden" value="<%=rs.getString("price")%>" name="price"/><%=rs.getString("price")%></td>
+            <td> <input type="number" min="0" name="quantity" value="0"/></td>
+            <td> <input type="submit" value="ADD TO CART"/> </td> 
+            </form>
+    	</tr>
+	<%
+	}
+	%>
+	</table>
+	<%
+	}
+	%>
+
 <%@include file="footer.inc" %>
