@@ -85,7 +85,7 @@
 	<td style = "border: 0px">  </td>
 	<td style = "border: 0px">  </td>
 	<td align = "right" style = "border: 0px"><b>Total:</b></td>
-	<td> <b><% 
+	<td> <b>$<% 
 			while ( rs.next() )
 			{
 				String tprice = rs.getString("totalprice");
