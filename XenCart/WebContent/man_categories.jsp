@@ -5,6 +5,7 @@
 	String action = (String)request.getParameter("a");
 	String catname = (String)request.getParameter("catname");
 	String catdesc = (String)request.getParameter("catdesc");
+	
 	if ( action != null && action.equals("insert") ) {
 		// Insert Request
 		if ( catname != null && !catname.equals("") ) {
@@ -45,6 +46,23 @@
 			// SQL Error
 			%><p style="color:red">DELETE ERROR: <%=e.toString() %></p><%
 		}
+	} else if ( action != null && action.equals("update") ) {
+		// Update Request
+		String update_cid = (String)request.getParameter("update_cid");
+		String update_cname = (String)request.getParameter("update_cname");
+		String update_cdesc = (String)request.getParameter("update_cdesc");
+		try {
+			if ( statement.executeUpdate("UPDATE categories SET name = '"+update_cname+"', description = '"+update_cdesc+"' WHERE id = '"+update_cid+"'") == 0 ) {
+				%><p style="color:red">UPDATE ERROR: Category '<%=update_cname %>' does not exist.</p><%
+			} else {
+				%><p style="color:green">Category '<%=update_cname %>' UPDATED.</p><%
+			}
+		} catch (NumberFormatException e) {
+			%><p style="color:red">UPDATE ERROR: Incorrect category id.</p><%
+		} catch (SQLException e) {
+			// SQL Error
+			%><p style="color:red">UPDATE ERROR: <%=e.toString() %></p><%
+		}
 	}
 %>
 <form action="?a=insert" name="insert" method="POST">
@@ -57,15 +75,27 @@
 <br><hr><br>
 <%
 	try {
-		rs = statement.executeQuery("SELECT categories.id, categories.name, description, ( SELECT count(*) FROM products WHERE category = categories.id ) AS count FROM categories");
+		rs = statement.executeQuery("SELECT categories.id, categories.name, description, ( SELECT count(*) FROM products WHERE category = categories.id ) AS count FROM categories ORDER BY categories.id ASC");
 	} catch (SQLException e) {
 	    throw new RuntimeException(e);
 	}
 %>
-<table border='1' width="99%"><tr><td><b>ID</b></td><td><b>Name</b></td><td><b>Description</b></td><td><b>Product Count</b></td><td><b>Actions</b></td></tr>
+<table border='1' width="99%"><tr><th>ID</th><th>Name</th><th>Description</th><th>Product Count</th><th>Actions</th></tr>
 <%
-	while ( rs.next() )
-		out.println("<tr><td>"+rs.getString("id")+"</td><td>"+rs.getString("name")+"</td><td>"+rs.getString("description")+"</td><td>"+rs.getString("count")+"</td><td>"+ ((rs.getInt("count")>0)?"":"<a href=\"?a=delete&did="+rs.getString("id")+"\"><b>DELETE</b></a>") +"</td></tr>");
+	while ( rs.next() ) { %>
+	<form action="?a=update" method="POST">
+	<tr>
+		<td> <input type="hidden" value="<%=rs.getString("id")%>" name="update_cid"/><%=rs.getString("id")%> </td>
+        <td> <input value="<%=rs.getString("name")%>" name="update_cname"/> </td>
+        <td> <input value="<%=rs.getString("description")%>" name="update_cdesc"/> </td>
+        <td> <%=rs.getString("count") %> </td>
+        <td> 
+        	<input type="submit" value="UPDATE">
+        	<input type="button" value="DELETE" <%=(rs.getInt("count")>0)?"disabled":"onClick=\"javascript:location.href='?a=delete&did="+rs.getString("id")+"'\"" %>/>
+        </td>
+    </tr>
+    </form>
+	<% }
 %>
 </table>
 

@@ -14,41 +14,50 @@
 	//String[] cat = new String[100]; 			// Why do this.....
 	LinkedHashMap<Integer, String> categories = new LinkedHashMap<Integer, String>();
 	
+	try {
+		rs = statement.executeQuery("SELECT name,id FROM categories ORDER BY id ASC");
+	} catch (SQLException e) {
+		throw new RuntimeException(e);
+	}
+	
+	while ( rs.next() ) {
+		// Save result up to a HashMap
+		categories.put(rs.getInt("id"), rs.getString("name"));
+	}
 	
 	//When the owner wants to insert a new product
-	if(action != null && action.equals("insert"))
-	{
+	if(action != null && action.equals("insert")) {
 			//check product name
-			if(proname != null && !proname.equals(""))
-			{
+			if(proname != null && !proname.equals("")) {
 				//check sku
-				if(sku != null && !sku.equals(""))
-				{
+				if(sku != null && !sku.equals("")) {
 					//check price
-					if(price != null && Double.parseDouble(price) >= 0)
+					if(price != null && Double.parseDouble(price) >= 0) {
 						try {
-						statement.executeUpdate("INSERT INTO products (name, sku, category, price) VALUES ('"+proname+"', '"+sku+"', '"+catid+"','"+price.toString()+"')");
-						statement.executeUpdate("UPDATE categories SET products=((SELECT products FROM categories WHERE id = '"+catid+"') + 1) WHERE id = '"+catid+"'");
+						statement.executeUpdate("INSERT INTO products (name, sku, category, price) VALUES ('"+proname+"', '"+sku+"', '"+catid+"','"+price+"')");
 						
-						%><p style="color:green">Product <%=proname %> CREATED.</p><%
-
-						
+						%><p style="color:green">Product <%=proname %> CREATED.<br/>
+						SKU: <%=sku %><br/>
+						Category: <%=categories.get(Integer.parseInt(catid)) %><br/>
+						Price: $<%=price %></p>
+						<%
 						} catch (SQLException e) {
-						// SQL Error - mostly because of duplicate category name
-						%><p style="color:red">INSERT ERROR: Duplicate product name!</p><%
-						}
-					else
-						%><p style="color:red">INSERT ERROR: Price error!</p><%
-					
-				}
-				else
-					%><p style="color:red">INSERT ERROR: SKU error!</p><%
-			}
-			else
-				%><p style="color:red">INSERT ERROR: Product name error!</p><%
-				submit = "Search";
-				catid = null;
-				proname = null;
+							// SQL Error - mostly because of duplicate category name
+							%>
+							<p style="color:red">INSERT ERROR: Duplicate product name!</p>
+					 <% }
+					} else { %>
+						<p style="color:red">INSERT ERROR: Price error!</p>
+				 <% }
+				} else {%>
+					<p style="color:red">INSERT ERROR: SKU error!</p>
+			 <% }
+			} else { %>
+				<p style="color:red">INSERT ERROR: Product name error!</p>
+		 <% }
+			submit = "Search";
+			catid = null;
+			proname = null;
 	}
 	
 	//When the owner wants to update a new product
@@ -63,16 +72,8 @@
 						//check price
 						if(price != null && Double.parseDouble(price) >= 0)
 							try {
-							/*rs = statement.executeQuery("SELECT category FROM products WHERE id = '"+pid+"'");
-							if(Integer.parseInt(catid) != (rs.getInt("category")))
-							{
-								//statement.executeUpdate("UPDATE categories SET products=((SELECT products FROM categories WHERE id = '"+rs.getInt("category")+"') - 1) WHERE id = '"+rs.getInt("category")+"'");
-								statement.executeUpdate("UPDATE categories SET products=((SELECT products FROM categories WHERE id = '"+catid+"') + 1) WHERE id = '"+catid+"'");
-							}*/
-							statement.executeUpdate("UPDATE products SET name='"+proname+"', sku='"+sku+"', category= '"+catid+"', price='"+price+"' WHERE id = '"+pid+"'");
-							
-
-							%><p style="color:green">Product <%=proname %> UPDATED.</p><%
+								statement.executeUpdate("UPDATE products SET name='"+proname+"', sku='"+sku+"', category= '"+catid+"', price='"+price+"' WHERE id = '"+pid+"'");
+								%><p style="color:green">Product <%=proname %> UPDATED.</p><%
 							
 							} catch (SQLException e) {
 							// SQL Error - mostly because of duplicate category name
@@ -121,17 +122,8 @@
 <%-- Categories list on the left --%>
 <a href="?<%=proname!=null?"proname="+proname:"" %>">All</a></br>
 <%
-	try {
-		rs = statement.executeQuery("SELECT name,id FROM categories ORDER BY id ASC");
-	} catch (SQLException e) {
-		throw new RuntimeException(e);
-	}
-	
-	while ( rs.next() ) {
-		// Save result up to a HashMap
-		categories.put(rs.getInt("id"), rs.getString("name"));
-		
-		%><a href="?catid=<%=rs.getInt("id")%><%=proname!=null?"&proname="+proname:"" %>"><%=rs.getString("name") %></a></br><%
+	for (Map.Entry<Integer, String> entry : categories.entrySet()) {
+		%><a href="?catid=<%=entry.getKey()%><%=proname!=null?"&proname="+proname:"" %>"><%=entry.getValue() %></a></br><%
 	}
 %>
 </td>
