@@ -11,7 +11,7 @@
 	String price = (String) request.getParameter("price");
 	String submit = (String) request.getParameter("Submit");
 	String pid = (String) request.getParameter("pid");
-	//String[] cat = new String[100]; 			// Why do this.....
+	
 	LinkedHashMap<Integer, String> categories = new LinkedHashMap<Integer, String>();
 	
 	int parsed_catid = -1;

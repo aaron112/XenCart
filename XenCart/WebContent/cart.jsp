@@ -1,10 +1,3 @@
-<%-- CSE 135 Project - XenCart
-  -- Team Xen
-  -- 
-  -- cart.jsp - Show Shopping Cart
-  -- 
-  --%>
-
 <% String page_title="Buy Shopping Cart"; %>
 <%@include file="header.jsp" %>
 
