@@ -14,6 +14,11 @@
 	//String[] cat = new String[100]; 			// Why do this.....
 	LinkedHashMap<Integer, String> categories = new LinkedHashMap<Integer, String>();
 	
+	int parsed_catid = -1;
+	try {
+		parsed_catid = Integer.parseInt(catid);
+	} catch (Exception e) {};
+	
 	try {
 		rs = statement.executeQuery("SELECT name,id FROM categories ORDER BY id ASC");
 	} catch (SQLException e) {
@@ -74,7 +79,6 @@
 							try {
 								statement.executeUpdate("UPDATE products SET name='"+proname+"', sku='"+sku+"', category= '"+catid+"', price='"+price+"' WHERE id = '"+pid+"'");
 								%><p style="color:green">Product <%=proname %> UPDATED.</p><%
-							
 							} catch (SQLException e) {
 							// SQL Error - mostly because of duplicate category name
 							%><p style="color:red">UPDATE ERROR: Wrong category name!</p><%
@@ -123,7 +127,9 @@
 <a href="?<%=proname!=null?"proname="+proname:"" %>">All</a></br>
 <%
 	for (Map.Entry<Integer, String> entry : categories.entrySet()) {
-		%><a href="?catid=<%=entry.getKey()%><%=proname!=null?"&proname="+proname:"" %>"><%=entry.getValue() %></a></br><%
+		%><a href="?catid=<%=entry.getKey()%><%=proname!=null?"&proname="+proname:"" %>"><%=entry.getValue() %></a>
+		<% if ( parsed_catid == entry.getKey() ) out.println(" <b><-</b>"); %>
+		</br><%
 	}
 %>
 </td>
@@ -155,7 +161,7 @@
 <%-- Form for searching a product --%>
 <form name="search" action="" method="GET">
 <fieldset><legend> Search Product </legend>
-<input type="hidden" value="<%=catid==null?"":catid %>" name="catid"/>
+<input type="hidden" value="<%=(catid==null)?"":catid %>" name="catid"/>
 <b>Partial Product Name: </b> <input type="text" name="proname" value="<%=proname==null?"":proname %>">
 <input type="submit" value="Search">
 <input type="button" value="Clear" onClick="javascript:location.href='?<%=catid==null?"":"catid="+catid %>'">
