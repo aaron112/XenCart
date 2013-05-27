@@ -37,6 +37,16 @@ CREATE TABLE cart_entry (
    count	INTEGER NOT NULL
 );
 
+CREATE TABLE sales (
+	id 			SERIAL PRIMARY KEY,
+	product_id	INT REFERENCES products (id) NOT NULL,
+	user_id		INT REFERENCES users (id) NOT NULL,
+	day			INT NOT NULL,
+	month		INT NOT NULL,
+	quantity	INT NOT NULL,
+	total_cost	DECIMAL(10,2) NOT NULL
+);
+
 COPY roles (id, name) FROM stdin;
 1	owner
 2	customer
