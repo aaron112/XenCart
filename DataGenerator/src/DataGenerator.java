@@ -206,7 +206,7 @@ public class DataGenerator {
 			String lname = lastNames.get((int) (Math.random() * lastNames
 					.size()));
 			String name = fname + " " + mname + " " + lname;
-			int st = (int) (Math.random() * STATES.length);
+			int st = (int) (Math.random() * STATES.length) + 1;
 			int age = (int) (Math.random() * MAX_AGE);
 
 			Customer c = new Customer(name, st, age);
