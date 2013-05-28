@@ -40,7 +40,7 @@ CREATE TABLE cart_entry (
 CREATE TABLE sales (
 	id 			SERIAL PRIMARY KEY,
 	product_id	INT REFERENCES products (id) NOT NULL,
-	user_id		INT REFERENCES users (id) NOT NULL,
+	customer_id	INT REFERENCES users (id) NOT NULL,
 	day			INT NOT NULL,
 	month		INT NOT NULL,
 	quantity	INT NOT NULL,
