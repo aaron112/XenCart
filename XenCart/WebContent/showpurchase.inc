@@ -2,21 +2,6 @@
 
 <%-- Get details from Shopping Cart table from DB --%>
 
-<%--
-	try {
-		rs = statement.executeQuery(  "SELECT products.name AS proname, "
-									+ "products.price AS price_per_item, "
-									+ "cart_entry.count AS amt, "
-									+ "(products.price * cart_entry.count) AS amtprice "
-									+ "FROM products "
-									+ "JOIN cart_entry "
-									+ "ON products.id = cart_entry.item "
-									);
-	} catch (SQLException e) {
-	    throw new RuntimeException(e);
-	}
---%>
-
 
 <%
 	// Get values from shopping cart rows associated with the user.
@@ -67,7 +52,7 @@
 <%-- Calculate the total price of the users shopping cart --%>
 <%
 	try {
-		rs = statement.executeQuery(  "SELECT "
+		 rs = statement.executeQuery(  "SELECT "
 									+ "SUM(products.price * cart_entry.count) AS totalprice "
 									+ "FROM products, cart_entry "
 									+ "WHERE products.id = cart_entry.item "
