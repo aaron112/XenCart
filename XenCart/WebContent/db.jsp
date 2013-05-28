@@ -3,7 +3,7 @@
 	final String sqlhost = "127.0.0.1";
 	final String sqluser = "xencart";
 	final String sqlpw = "xencart";
-	final String sqldb = "xencart";
+	final String sqldb = "cse135";
 	
 	Connection conn = null;
 	PreparedStatement pstmt = null;
