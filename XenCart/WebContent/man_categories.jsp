@@ -5,6 +5,7 @@
 	String action = (String)request.getParameter("a");
 	String catname = (String)request.getParameter("catname");
 	String catdesc = (String)request.getParameter("catdesc");
+	String pagenum = (String) request.getParameter("pg");
 	
 	if ( action != null && action.equals("insert") ) {
 		// Insert Request
@@ -74,8 +75,23 @@
 </form>
 <br><hr><br>
 <%
+	int offset = 0, pg = 0;
+
+	try
+	{
+		offset = Integer.parseInt(pagenum) * LIMIT;
+		pg = Integer.parseInt(pagenum);
+		if(pg < 0)
+			throw new Exception();
+	}
+	catch(Exception e)
+	{
+		offset = 0;
+		pg = 1;
+	}
+
 	try {
-		rs = statement.executeQuery("SELECT categories.id, categories.name, description, ( SELECT count(*) FROM products WHERE category = categories.id ) AS count FROM categories ORDER BY categories.id ASC");
+		rs = statement.executeQuery("SELECT categories.id, categories.name, description, ( SELECT count(*) FROM products WHERE category = categories.id ) AS count FROM categories ORDER BY categories.id ASC LIMIT " +LIMIT+ " OFFSET " +offset);
 	} catch (SQLException e) {
 	    throw new RuntimeException(e);
 	}
@@ -98,5 +114,10 @@
 	<% }
 %>
 </table>
+<p align="right">
+	<input type="button" value="Previous 20 Categories" onClick="javascript:location.href='?catid=<%=catname==null?"":catname%>&pg=<%=Integer.toString(pg-1)%>'">
+	<input type="button" value="Next 20 Categories" onClick="javascript:location.href='?catid=<%=catname==null?"":catname%>&pg=<%=Integer.toString(pg+1)%>'">
+</p>	
+
 
 <%@include file="footer.inc" %>

@@ -2,12 +2,15 @@
     pageEncoding="ISO-8859-1"%>
 <%@include file="db.jsp" %>
 <% 
+final int LIMIT = 20;
+
 session = request.getSession();
 String user_name = (String)session.getAttribute("user");
 int user_id = -1;		// -1 indicates guest
 int user_age = 0;
 int user_role = 0; // Guest = 0
 String user_state = "";
+
 
 if ( user_name != null ) {
 	try {

@@ -4,6 +4,7 @@
 <h2>Manage Products</h2>
 <%
 	//Parse the incoming parameters first
+	
 	String action = (String) request.getParameter("a");
 	String proname = (String) request.getParameter("proname");
 	String catid = (String) request.getParameter("catid");
@@ -11,6 +12,7 @@
 	String price = (String) request.getParameter("price");
 	String submit = (String) request.getParameter("Submit");
 	String pid = (String) request.getParameter("pid");
+	String pagenum = (String) request.getParameter("pg");
 	
 	LinkedHashMap<Integer, String> categories = new LinkedHashMap<Integer, String>();
 	
@@ -174,7 +176,22 @@
     if((submit != null && submit.equals("Search")) || action == null) {
     	// Build Query
     	boolean criteriaSpecified = false;
+    	int offset = 0, pg = 0;
     	String sqlquery = "SELECT * FROM products ";
+    	
+    	try
+    	{
+    		offset = Integer.parseInt(pagenum) * LIMIT;
+    		pg = Integer.parseInt(pagenum);
+   			if(pg < 0)
+   				throw new Exception();
+    	}
+    	catch(Exception e)
+    	{
+    		offset = 0;
+    		pg = 1;
+    	}
+    	
     	if ( (catid == null || catid.equals("")) && (proname == null || proname.equals("")) ) {
     		// No search criteria specified
     	} else {
@@ -192,13 +209,15 @@
 			    sqlquery += "LOWER(name) LIKE '%"+proname.toLowerCase()+"%'";
 		    }
 	    }
-	    sqlquery += " ORDER BY id ASC";
+	    sqlquery += " ORDER BY id ASC LIMIT "+LIMIT+" OFFSET "+offset;
 	   
 	    try {
 	    	rs = statement.executeQuery(sqlquery);
 	    } catch (SQLException e) {
  	    	throw new RuntimeException(e);
  		}
+	    
+	    
 %>
 	<%-- Tables showing the searched products --%>
 	<table border = "1" width = "99%">
@@ -236,6 +255,10 @@
 	}
 	%>
 	</table>
+    <p align="right">
+       	<input type="button" value="Previous 20 Products" onClick="javascript:location.href='?catid=<%=catid==null?"":catid%>&proname=<%=proname==null?"":proname%>&pg=<%=Integer.toString(pg-1)%>'">
+    	<input type="button" value="Next 20 Products" onClick="javascript:location.href='?catid=<%=catid==null?"":catid%>&proname=<%=proname==null?"":proname%>&pg=<%=Integer.toString(pg+1)%>'">
+    </p>	
 	<%
    	}
 	%>

@@ -11,6 +11,7 @@
 	String pid = (String) request.getParameter("pid");
 	String quantity = (String) request.getParameter("quantity");
 	String submit = (String) request.getParameter("Submit");
+	String pagenum = (String) request.getParameter("pg");
 	LinkedHashMap<Integer, String> categories = new LinkedHashMap<Integer, String>();
 	
 	int parsed_catid = -1;
@@ -103,7 +104,22 @@
 	// Search for product
     	// Build Query
     	boolean criteriaSpecified = false;
+    	int offset = 0, pg = 0;
     	String sqlquery = "SELECT * FROM products ";
+    	
+    	try
+    	{
+    		offset = Integer.parseInt(pagenum) * LIMIT;
+    		pg = Integer.parseInt(pagenum);
+    		if(pg < 0)
+    			throw new Exception();
+    	}
+    	catch(Exception e)
+    	{
+    		offset = 0;
+    		pg = 1;
+    	}
+    	
     	if ( (catid == null || catid.equals("")) && (proname == null || proname.equals("")) ) {
     		// No search criteria specified
     	} else {
@@ -121,7 +137,7 @@
 			    sqlquery += "LOWER(name) LIKE '%"+proname.toLowerCase()+"%'";
 		    }
 	    }
-	    sqlquery += " ORDER BY id ASC";
+	    sqlquery += " ORDER BY id ASC LIMIT "+LIMIT+" OFFSET "+offset;
 	   
 	    try {
 	    	rs = statement.executeQuery(sqlquery);
@@ -161,5 +177,9 @@
 	}
 	%>
 	</table>
+    <p align="right">
+    	<input type="button" value="Previous 20 Products" onClick="javascript:location.href='?catid=<%=catid==null?"":catid%>&proname=<%=proname==null?"":proname%>&pg=<%=Integer.toString(pg-1)%>'">
+    	<input type="button" value="Next 20 Products" onClick="javascript:location.href='?catid=<%=catid==null?"":catid%>&proname=<%=proname==null?"":proname%>&pg=<%=Integer.toString(pg+1)%>'">
+    </p>	
 </td></tr></table>
 <%@include file="footer.inc" %>
