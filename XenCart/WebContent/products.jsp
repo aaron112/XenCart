@@ -13,6 +13,11 @@
 	String submit = (String) request.getParameter("Submit");
 	LinkedHashMap<Integer, String> categories = new LinkedHashMap<Integer, String>();
 	
+	int parsed_catid = -1;
+	try {
+		parsed_catid = Integer.parseInt(catid);
+	} catch (Exception e) {};
+	
 	//When the user wants to add products to the shopping cart
 	if(action != null && action.equals("add"))
 	{
@@ -75,7 +80,9 @@
 		// Save result up to a HashMap
 		categories.put(rs.getInt("id"), rs.getString("name"));
 		
-		%><a href="?catid=<%=rs.getInt("id")%><%=proname!=null?"&proname="+proname:"" %>"><%=rs.getString("name") %></a></br><%
+		%><a href="?catid=<%=rs.getInt("id")%><%=proname!=null?"&proname="+proname:"" %>"><%=rs.getString("name") %></a>
+		<% if ( parsed_catid == rs.getInt("id") ) out.println(" <b><-</b>"); %>
+		</br><%
 	}
 %>
 </td>
