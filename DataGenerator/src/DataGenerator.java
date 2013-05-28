@@ -81,7 +81,7 @@ public class DataGenerator {
 	private static void createMiscTables(Connection conn)
 			throws SQLException {
 		PreparedStatement createMiscPS = conn
-				.prepareStatement("CREATE TABLE roles (id SERIAL PRIMARY KEY, name TEXT NOT NULL); CREATE TABLE states (id SERIAL PRIMARY KEY, name TEXT NOT NULL);");
+				.prepareStatement("CREATE TABLE roles (id SERIAL PRIMARY KEY, name TEXT NOT NULL); CREATE TABLE states (id SERIAL PRIMARY KEY, name TEXT NOT NULL); CREATE TABLE cart_entry (id SERIAL PRIMARY KEY, owner INTEGER REFERENCES users (id) NOT NULL, item INTEGER REFERENCES products (id) NOT NULL, count INTEGER NOT NULL);");
 		if (createMiscPS != null) {
 			createMiscPS.execute();
 			createMiscPS.close();
@@ -401,6 +401,7 @@ public class DataGenerator {
             conn.setAutoCommit(false);
             DataGenerator.setM(m);
             createMiscTables(conn);
+            conn.commit();
 			createCustomersTable(conn, firstNames, lastNames, n);
             conn.commit();
 			createCategoriesTable(conn);
