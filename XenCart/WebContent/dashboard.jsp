@@ -98,7 +98,7 @@
     	catch(Exception e)
     	{
     		cpgoffset = 0;
-    		cpg = 1;
+    		cpg = 0;
     	}
 		
 		try
@@ -138,6 +138,7 @@
 %>
 <table border = "1" width = "99%">
 	<tr>
+		<th>Rank</th>
 		<th>Customer</th>
 		<th>Total Amount</th>
 		<th>Product <%=ppgoffset+1%></th>
@@ -155,6 +156,7 @@
 		while(rowCount < 10){
 	%>
 	<tr>
+		<td><%= cpgoffset + rowCount + 1 %></td>
 		<%try {
 				String sqlquery = "SELECT name FROM users WHERE id = "+Integer.toString(customerRank[rowCount]);
 		    	rs = statement.executeQuery(sqlquery);
