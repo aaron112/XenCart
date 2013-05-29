@@ -17,8 +17,9 @@
 %>
 
 <%-- Form for setting report Criteria --%>
-<form action="?a=show" name="show" method="GET">
+<form method="GET">
 <fieldset><legend> Show Report </legend>
+<input type="hidden" name="a" value="show" />
 <b>Row Dimension: </b>
 	<select name="row">
 		<option value="0">customers</option>
@@ -91,11 +92,18 @@
     		offset = 0;
     		pg = 1;
     	}
+		
+		
+		
+		
 %>
-
+<table border = "1" width = "99%">
+	<tr>
+	</tr>
+</table>
 <p align="right">
-   	<input type="button" value="Previous 10 <%=row.equals("0")?"Customer":"Customer States" %>" onClick="javascript:location.href='?pg=<%=Integer.toString(pg-1)%>'">
-   	<input type="button" value="Next 10 <%=row.equals("0")?"Customer":"Customer States" %>" onClick="javascript:location.href='?pg=<%=Integer.toString(pg+1)%>'">
+   	<input type="button" value="Previous 10 <%=row.equals("0")?"Customer":"Customer States" %>" onClick="javascript:location.href='?a=show&row=<%=row%>&age=<%=age%>&state=<%=state%>&catid=<%=catid%>&quarter=<%=quarter%>&pg=<%=Integer.toString(pg-1)%>'">
+   	<input type="button" value="Next 10 <%=row.equals("0")?"Customer":"Customer States" %>" onClick="javascript:location.href='?a=show&row=<%=row%>&age=<%=age%>&state=<%=state%>&catid=<%=catid%>&quarter=<%=quarter%>&pg=<%=Integer.toString(pg+1)%>'">
 </p>
 <%} %>
 <%@include file="footer.inc" %>
