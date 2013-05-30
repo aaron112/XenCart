@@ -1,3 +1,7 @@
+Phase 2:
+We have chosen to create 2 tables: sales_total_by_product and (sales_total_by_state OR sales_total_by_user).
+The above tables stores their ranks and total amount of purchase, which later becomes the row and column of the view.
+
 Program Architecture for XenCart (Phase 1):
 db.jsp				- Handles database connections, included by header.jsp
 header.jsp			- JSP and HTML Header for all pages, initializes common variables like current user
