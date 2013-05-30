@@ -248,52 +248,34 @@
 	try {
 		String sqlquery;
 		if (row_dim == 0) {
-			sqlquery = "SELECT id, name, customer_total," +
-					"(SELECT SUM(total_cost) FROM sales WHERE customer_id = users.id AND product_id = "+productRank[0]+" GROUP BY customer_id LIMIT 1) AS prod1,"+
-					"(SELECT SUM(quantity) FROM sales WHERE customer_id = users.id AND product_id = "+productRank[0]+" GROUP BY customer_id LIMIT 1) AS prodq1,"+
-					"(SELECT SUM(total_cost) FROM sales WHERE customer_id = users.id AND product_id = "+productRank[1]+" GROUP BY customer_id LIMIT 1) AS prod2,"+
-					"(SELECT SUM(quantity) FROM sales WHERE customer_id = users.id AND product_id = "+productRank[1]+" GROUP BY customer_id LIMIT 1) AS prodq2,"+
-					"(SELECT SUM(total_cost) FROM sales WHERE customer_id = users.id AND product_id = "+productRank[2]+" GROUP BY customer_id LIMIT 1) AS prod3,"+
-					"(SELECT SUM(quantity) FROM sales WHERE customer_id = users.id AND product_id = "+productRank[2]+" GROUP BY customer_id LIMIT 1) AS prodq3,"+
-					"(SELECT SUM(total_cost) FROM sales WHERE customer_id = users.id AND product_id = "+productRank[3]+" GROUP BY customer_id LIMIT 1) AS prod4,"+
-					"(SELECT SUM(quantity) FROM sales WHERE customer_id = users.id AND product_id = "+productRank[3]+" GROUP BY customer_id LIMIT 1) AS prodq4,"+
-					"(SELECT SUM(total_cost) FROM sales WHERE customer_id = users.id AND product_id = "+productRank[4]+" GROUP BY customer_id LIMIT 1) AS prod5,"+
-					"(SELECT SUM(quantity) FROM sales WHERE customer_id = users.id AND product_id = "+productRank[4]+" GROUP BY customer_id LIMIT 1) AS prodq5,"+
-					"(SELECT SUM(total_cost) FROM sales WHERE customer_id = users.id AND product_id = "+productRank[5]+" GROUP BY customer_id LIMIT 1) AS prod6,"+
-					"(SELECT SUM(quantity) FROM sales WHERE customer_id = users.id AND product_id = "+productRank[5]+" GROUP BY customer_id LIMIT 1) AS prodq6,"+
-					"(SELECT SUM(total_cost) FROM sales WHERE customer_id = users.id AND product_id = "+productRank[6]+" GROUP BY customer_id LIMIT 1) AS prod7,"+
-					"(SELECT SUM(quantity) FROM sales WHERE customer_id = users.id AND product_id = "+productRank[6]+" GROUP BY customer_id LIMIT 1) AS prodq7,"+
-					"(SELECT SUM(total_cost) FROM sales WHERE customer_id = users.id AND product_id = "+productRank[7]+" GROUP BY customer_id LIMIT 1) AS prod8,"+
-					"(SELECT SUM(quantity) FROM sales WHERE customer_id = users.id AND product_id = "+productRank[7]+" GROUP BY customer_id LIMIT 1) AS prodq8,"+
-					"(SELECT SUM(total_cost) FROM sales WHERE customer_id = users.id AND product_id = "+productRank[8]+" GROUP BY customer_id LIMIT 1) AS prod9,"+
-					"(SELECT SUM(quantity) FROM sales WHERE customer_id = users.id AND product_id = "+productRank[8]+" GROUP BY customer_id LIMIT 1) AS prodq9,"+
-					"(SELECT SUM(total_cost) FROM sales WHERE customer_id = users.id AND product_id = "+productRank[9]+" GROUP BY customer_id LIMIT 1) AS prod10,"+
-					"(SELECT SUM(quantity) FROM sales WHERE customer_id = users.id AND product_id = "+productRank[9]+" GROUP BY customer_id LIMIT 1) AS prodq10"+
-					" FROM sales_total_by_user, users WHERE sales_total_by_user.customer_id = users.id "+
+			sqlquery = "SELECT id, name, customer_total, a.c, a.q, b.c, b.q, c.c, c.q, d.c, d.q, e.c, e.q, f.c, f.q, g.c, g.q, h.c, h.q, i.c, i.q, j.c, j.q " +
+					" FROM sales_total_by_user, users "+
+					"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, sales.customer_id FROM sales WHERE product_id = "+productRank[0]+" GROUP BY sales.customer_id) a ON (a.customer_id = users.id)"+
+					"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, sales.customer_id FROM sales WHERE product_id = "+productRank[1]+" GROUP BY sales.customer_id) b ON (b.customer_id = users.id)"+
+					"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, sales.customer_id FROM sales WHERE product_id = "+productRank[2]+" GROUP BY sales.customer_id) c ON (c.customer_id = users.id)"+
+					"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, sales.customer_id FROM sales WHERE product_id = "+productRank[3]+" GROUP BY sales.customer_id) d ON (d.customer_id = users.id)"+
+					"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, sales.customer_id FROM sales WHERE product_id = "+productRank[4]+" GROUP BY sales.customer_id) e ON (e.customer_id = users.id)"+
+					"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, sales.customer_id FROM sales WHERE product_id = "+productRank[5]+" GROUP BY sales.customer_id) f ON (f.customer_id = users.id)"+
+					"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, sales.customer_id FROM sales WHERE product_id = "+productRank[6]+" GROUP BY sales.customer_id) g ON (g.customer_id = users.id)"+
+					"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, sales.customer_id FROM sales WHERE product_id = "+productRank[7]+" GROUP BY sales.customer_id) h ON (h.customer_id = users.id)"+
+					"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, sales.customer_id FROM sales WHERE product_id = "+productRank[8]+" GROUP BY sales.customer_id) i ON (i.customer_id = users.id)"+
+					"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, sales.customer_id FROM sales WHERE product_id = "+productRank[9]+" GROUP BY sales.customer_id) j ON (j.customer_id = users.id)"+
+					"WHERE sales_total_by_user.customer_id = users.id "+
 					"ORDER BY customer_total DESC LIMIT 10 OFFSET "+cpgoffset;
 		} else {
-			sqlquery = "SELECT states.id, states.name, state_total, "+
-					"(SELECT SUM(total_cost) FROM sales, users WHERE sales.customer_id = users.id AND users.state = states.id AND product_id = "+productRank[0]+" GROUP BY state LIMIT 1) AS prod1,"+
-					"(SELECT SUM(quantity) FROM sales, users WHERE sales.customer_id = users.id AND users.state = states.id AND product_id = "+productRank[0]+" GROUP BY state LIMIT 1) AS prodq1,"+
-					"(SELECT SUM(total_cost) FROM sales, users WHERE sales.customer_id = users.id AND users.state = states.id AND product_id = "+productRank[1]+" GROUP BY state LIMIT 1) AS prod2,"+
-					"(SELECT SUM(quantity) FROM sales, users WHERE sales.customer_id = users.id AND users.state = states.id AND product_id = "+productRank[1]+" GROUP BY state LIMIT 1) AS prodq2,"+
-					"(SELECT SUM(total_cost) FROM sales, users WHERE sales.customer_id = users.id AND users.state = states.id AND product_id = "+productRank[2]+" GROUP BY state LIMIT 1) AS prod3,"+
-					"(SELECT SUM(quantity) FROM sales, users WHERE sales.customer_id = users.id AND users.state = states.id AND product_id = "+productRank[2]+" GROUP BY state LIMIT 1) AS prodq3,"+
-					"(SELECT SUM(total_cost) FROM sales, users WHERE sales.customer_id = users.id AND users.state = states.id AND product_id = "+productRank[3]+" GROUP BY state LIMIT 1) AS prod4,"+
-					"(SELECT SUM(quantity) FROM sales, users WHERE sales.customer_id = users.id AND users.state = states.id AND product_id = "+productRank[3]+" GROUP BY state LIMIT 1) AS prodq4,"+
-					"(SELECT SUM(total_cost) FROM sales, users WHERE sales.customer_id = users.id AND users.state = states.id AND product_id = "+productRank[4]+" GROUP BY state LIMIT 1) AS prod5,"+
-					"(SELECT SUM(quantity) FROM sales, users WHERE sales.customer_id = users.id AND users.state = states.id AND product_id = "+productRank[4]+" GROUP BY state LIMIT 1) AS prodq5,"+
-					"(SELECT SUM(total_cost) FROM sales, users WHERE sales.customer_id = users.id AND users.state = states.id AND product_id = "+productRank[5]+" GROUP BY state LIMIT 1) AS prod6,"+
-					"(SELECT SUM(quantity) FROM sales, users WHERE sales.customer_id = users.id AND users.state = states.id AND product_id = "+productRank[5]+" GROUP BY state LIMIT 1) AS prodq6,"+
-					"(SELECT SUM(total_cost) FROM sales, users WHERE sales.customer_id = users.id AND users.state = states.id AND product_id = "+productRank[6]+" GROUP BY state LIMIT 1) AS prod7,"+
-					"(SELECT SUM(quantity) FROM sales, users WHERE sales.customer_id = users.id AND users.state = states.id AND product_id = "+productRank[6]+" GROUP BY state LIMIT 1) AS prodq7,"+
-					"(SELECT SUM(total_cost) FROM sales, users WHERE sales.customer_id = users.id AND users.state = states.id AND product_id = "+productRank[7]+" GROUP BY state LIMIT 1) AS prod8,"+
-					"(SELECT SUM(quantity) FROM sales, users WHERE sales.customer_id = users.id AND users.state = states.id AND product_id = "+productRank[7]+" GROUP BY state LIMIT 1) AS prodq8,"+
-					"(SELECT SUM(total_cost) FROM sales, users WHERE sales.customer_id = users.id AND users.state = states.id AND product_id = "+productRank[8]+" GROUP BY state LIMIT 1) AS prod9,"+
-					"(SELECT SUM(quantity) FROM sales, users WHERE sales.customer_id = users.id AND users.state = states.id AND product_id = "+productRank[8]+" GROUP BY state LIMIT 1) AS prodq9,"+
-					"(SELECT SUM(total_cost) FROM sales, users WHERE sales.customer_id = users.id AND users.state = states.id AND product_id = "+productRank[9]+" GROUP BY state LIMIT 1) AS prod10,"+
-					"(SELECT SUM(quantity) FROM sales, users WHERE sales.customer_id = users.id AND users.state = states.id AND product_id = "+productRank[9]+" GROUP BY state LIMIT 1) AS prodq10"+
-					" FROM sales_total_by_state, states WHERE sales_total_by_state.state = states.id " +
+			sqlquery = "SELECT states.id, states.name, state_total, a.c, a.q, b.c, b.q, c.c, c.q, d.c, d.q, e.c, e.q, f.c, f.q, g.c, g.q, h.c, h.q, i.c, i.q, j.c, j.q "+
+					    " FROM sales_total_by_state, states "+
+						"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, users.state FROM sales, users WHERE sales.customer_id = users.id AND product_id = "+productRank[0]+" GROUP BY users.state) a ON (a.state = states.id)"+
+						"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, users.state FROM sales, users WHERE sales.customer_id = users.id AND product_id = "+productRank[1]+" GROUP BY users.state) b ON (b.state = states.id)"+
+						"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, users.state FROM sales, users WHERE sales.customer_id = users.id AND product_id = "+productRank[2]+" GROUP BY users.state) c ON (c.state = states.id)"+
+						"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, users.state FROM sales, users WHERE sales.customer_id = users.id AND product_id = "+productRank[3]+" GROUP BY users.state) d ON (d.state = states.id)"+
+						"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, users.state FROM sales, users WHERE sales.customer_id = users.id AND product_id = "+productRank[4]+" GROUP BY users.state) e ON (e.state = states.id)"+
+						"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, users.state FROM sales, users WHERE sales.customer_id = users.id AND product_id = "+productRank[5]+" GROUP BY users.state) f ON (f.state = states.id)"+
+						"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, users.state FROM sales, users WHERE sales.customer_id = users.id AND product_id = "+productRank[6]+" GROUP BY users.state) g ON (g.state = states.id)"+
+						"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, users.state FROM sales, users WHERE sales.customer_id = users.id AND product_id = "+productRank[7]+" GROUP BY users.state) h ON (h.state = states.id)"+
+						"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, users.state FROM sales, users WHERE sales.customer_id = users.id AND product_id = "+productRank[8]+" GROUP BY users.state) i ON (i.state = states.id)"+
+						"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, users.state FROM sales, users WHERE sales.customer_id = users.id AND product_id = "+productRank[9]+" GROUP BY users.state) j ON (j.state = states.id)"+
+					"WHERE sales_total_by_state.state = states.id " +
 					"ORDER BY state_total DESC LIMIT 10 OFFSET "+cpgoffset;
 		}
     	rs = statement.executeQuery(sqlquery);
