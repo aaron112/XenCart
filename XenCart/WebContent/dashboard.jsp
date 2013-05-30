@@ -44,19 +44,18 @@
 	Integer[] productRank = new Integer[10];
 	
 	String query_string = "?a=show&row_dim="+row_dim+"&age="+age+"&state="+state+"&catid="+catid+"&quarter="+quarter;
+
+	int qtr_start = -1;
+	if (quarter.equals("0")) qtr_start = 1;
+	else if (quarter.equals("1")) qtr_start = 4;
+	else if (quarter.equals("2")) qtr_start = 7;
+	else if (quarter.equals("3")) qtr_start = 10;
 	
 	if(action != null && action.equals("generate")) {
 		// Update then refresh to show state.
 		out.println("Loading...");
 		out.flush();
 		response.flushBuffer();
-		
-		int qtr_start = -1;
-		if (quarter.equals("0")) qtr_start = 1;
-		else if (quarter.equals("1")) qtr_start = 4;
-		else if (quarter.equals("2")) qtr_start = 7;
-		else if (quarter.equals("3")) qtr_start = 10;
-		
 		
 		String from_where_statement = "FROM sales, users, products WHERE sales.customer_id = users.id AND sales.product_id = products.id " +
 		(age_parsed==-1?"":"AND users.age BETWEEN "+age_parsed+" AND "+(age_parsed+9)+" ") +
@@ -247,34 +246,36 @@
 	// Get Top 10 Customers / States
 	try {
 		String sqlquery;
+
+		String qtr_where_str = (qtr_start==-1?"":" AND sales.month BETWEEN "+qtr_start+" AND "+(qtr_start+2)+" ");
 		if (row_dim == 0) {
 			sqlquery = "SELECT id, name, customer_total, a.c, a.q, b.c, b.q, c.c, c.q, d.c, d.q, e.c, e.q, f.c, f.q, g.c, g.q, h.c, h.q, i.c, i.q, j.c, j.q " +
 					" FROM sales_total_by_user, users "+
-					"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, sales.customer_id FROM sales WHERE product_id = "+productRank[0]+" GROUP BY sales.customer_id) a ON (a.customer_id = users.id)"+
-					"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, sales.customer_id FROM sales WHERE product_id = "+productRank[1]+" GROUP BY sales.customer_id) b ON (b.customer_id = users.id)"+
-					"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, sales.customer_id FROM sales WHERE product_id = "+productRank[2]+" GROUP BY sales.customer_id) c ON (c.customer_id = users.id)"+
-					"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, sales.customer_id FROM sales WHERE product_id = "+productRank[3]+" GROUP BY sales.customer_id) d ON (d.customer_id = users.id)"+
-					"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, sales.customer_id FROM sales WHERE product_id = "+productRank[4]+" GROUP BY sales.customer_id) e ON (e.customer_id = users.id)"+
-					"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, sales.customer_id FROM sales WHERE product_id = "+productRank[5]+" GROUP BY sales.customer_id) f ON (f.customer_id = users.id)"+
-					"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, sales.customer_id FROM sales WHERE product_id = "+productRank[6]+" GROUP BY sales.customer_id) g ON (g.customer_id = users.id)"+
-					"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, sales.customer_id FROM sales WHERE product_id = "+productRank[7]+" GROUP BY sales.customer_id) h ON (h.customer_id = users.id)"+
-					"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, sales.customer_id FROM sales WHERE product_id = "+productRank[8]+" GROUP BY sales.customer_id) i ON (i.customer_id = users.id)"+
-					"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, sales.customer_id FROM sales WHERE product_id = "+productRank[9]+" GROUP BY sales.customer_id) j ON (j.customer_id = users.id)"+
+					"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, sales.customer_id FROM sales WHERE product_id = "+productRank[0]+qtr_where_str+" GROUP BY sales.customer_id) a ON (a.customer_id = users.id)"+
+					"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, sales.customer_id FROM sales WHERE product_id = "+productRank[1]+qtr_where_str+" GROUP BY sales.customer_id) b ON (b.customer_id = users.id)"+
+					"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, sales.customer_id FROM sales WHERE product_id = "+productRank[2]+qtr_where_str+" GROUP BY sales.customer_id) c ON (c.customer_id = users.id)"+
+					"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, sales.customer_id FROM sales WHERE product_id = "+productRank[3]+qtr_where_str+" GROUP BY sales.customer_id) d ON (d.customer_id = users.id)"+
+					"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, sales.customer_id FROM sales WHERE product_id = "+productRank[4]+qtr_where_str+" GROUP BY sales.customer_id) e ON (e.customer_id = users.id)"+
+					"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, sales.customer_id FROM sales WHERE product_id = "+productRank[5]+qtr_where_str+" GROUP BY sales.customer_id) f ON (f.customer_id = users.id)"+
+					"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, sales.customer_id FROM sales WHERE product_id = "+productRank[6]+qtr_where_str+" GROUP BY sales.customer_id) g ON (g.customer_id = users.id)"+
+					"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, sales.customer_id FROM sales WHERE product_id = "+productRank[7]+qtr_where_str+" GROUP BY sales.customer_id) h ON (h.customer_id = users.id)"+
+					"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, sales.customer_id FROM sales WHERE product_id = "+productRank[8]+qtr_where_str+" GROUP BY sales.customer_id) i ON (i.customer_id = users.id)"+
+					"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, sales.customer_id FROM sales WHERE product_id = "+productRank[9]+qtr_where_str+" GROUP BY sales.customer_id) j ON (j.customer_id = users.id)"+
 					"WHERE sales_total_by_user.customer_id = users.id "+
 					"ORDER BY customer_total DESC LIMIT 10 OFFSET "+cpgoffset;
 		} else {
 			sqlquery = "SELECT states.id, states.name, state_total, a.c, a.q, b.c, b.q, c.c, c.q, d.c, d.q, e.c, e.q, f.c, f.q, g.c, g.q, h.c, h.q, i.c, i.q, j.c, j.q "+
 					    " FROM sales_total_by_state, states "+
-						"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, users.state FROM sales, users WHERE sales.customer_id = users.id AND product_id = "+productRank[0]+" GROUP BY users.state) a ON (a.state = states.id)"+
-						"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, users.state FROM sales, users WHERE sales.customer_id = users.id AND product_id = "+productRank[1]+" GROUP BY users.state) b ON (b.state = states.id)"+
-						"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, users.state FROM sales, users WHERE sales.customer_id = users.id AND product_id = "+productRank[2]+" GROUP BY users.state) c ON (c.state = states.id)"+
-						"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, users.state FROM sales, users WHERE sales.customer_id = users.id AND product_id = "+productRank[3]+" GROUP BY users.state) d ON (d.state = states.id)"+
-						"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, users.state FROM sales, users WHERE sales.customer_id = users.id AND product_id = "+productRank[4]+" GROUP BY users.state) e ON (e.state = states.id)"+
-						"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, users.state FROM sales, users WHERE sales.customer_id = users.id AND product_id = "+productRank[5]+" GROUP BY users.state) f ON (f.state = states.id)"+
-						"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, users.state FROM sales, users WHERE sales.customer_id = users.id AND product_id = "+productRank[6]+" GROUP BY users.state) g ON (g.state = states.id)"+
-						"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, users.state FROM sales, users WHERE sales.customer_id = users.id AND product_id = "+productRank[7]+" GROUP BY users.state) h ON (h.state = states.id)"+
-						"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, users.state FROM sales, users WHERE sales.customer_id = users.id AND product_id = "+productRank[8]+" GROUP BY users.state) i ON (i.state = states.id)"+
-						"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, users.state FROM sales, users WHERE sales.customer_id = users.id AND product_id = "+productRank[9]+" GROUP BY users.state) j ON (j.state = states.id)"+
+						"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, users.state FROM sales, users WHERE sales.customer_id = users.id AND product_id = "+productRank[0]+qtr_where_str+" GROUP BY users.state) a ON (a.state = states.id)"+
+						"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, users.state FROM sales, users WHERE sales.customer_id = users.id AND product_id = "+productRank[1]+qtr_where_str+" GROUP BY users.state) b ON (b.state = states.id)"+
+						"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, users.state FROM sales, users WHERE sales.customer_id = users.id AND product_id = "+productRank[2]+qtr_where_str+" GROUP BY users.state) c ON (c.state = states.id)"+
+						"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, users.state FROM sales, users WHERE sales.customer_id = users.id AND product_id = "+productRank[3]+qtr_where_str+" GROUP BY users.state) d ON (d.state = states.id)"+
+						"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, users.state FROM sales, users WHERE sales.customer_id = users.id AND product_id = "+productRank[4]+qtr_where_str+" GROUP BY users.state) e ON (e.state = states.id)"+
+						"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, users.state FROM sales, users WHERE sales.customer_id = users.id AND product_id = "+productRank[5]+qtr_where_str+" GROUP BY users.state) f ON (f.state = states.id)"+
+						"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, users.state FROM sales, users WHERE sales.customer_id = users.id AND product_id = "+productRank[6]+qtr_where_str+" GROUP BY users.state) g ON (g.state = states.id)"+
+						"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, users.state FROM sales, users WHERE sales.customer_id = users.id AND product_id = "+productRank[7]+qtr_where_str+" GROUP BY users.state) h ON (h.state = states.id)"+
+						"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, users.state FROM sales, users WHERE sales.customer_id = users.id AND product_id = "+productRank[8]+qtr_where_str+" GROUP BY users.state) i ON (i.state = states.id)"+
+						"LEFT OUTER JOIN (SELECT SUM(sales.total_cost) AS c, SUM(sales.quantity) AS q, users.state FROM sales, users WHERE sales.customer_id = users.id AND product_id = "+productRank[9]+qtr_where_str+" GROUP BY users.state) j ON (j.state = states.id)"+
 					"WHERE sales_total_by_state.state = states.id " +
 					"ORDER BY state_total DESC LIMIT 10 OFFSET "+cpgoffset;
 		}
@@ -291,7 +292,7 @@
 		<th><%=rs.getString(2)%></th>
 		<th>$<%=rs.getString(3)%></th>
 		<% for (int i=4; i < 24; ++i) { %>
-		<td>$<%=(rs.getString(i)==null)?"":rs.getString(i) %></td><% ++i; %><td><%=(rs.getString(i)==null)?"":rs.getString(i) %></td>
+		<td><%=(rs.getString(i)==null)?"":"$"+rs.getString(i) %></td><% ++i; %><td><%=(rs.getString(i)==null)?"":rs.getString(i) %></td>
 		<% }
 		rowCount++;%>
 	</tr>
