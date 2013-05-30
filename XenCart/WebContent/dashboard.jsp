@@ -29,11 +29,6 @@
 	String state = (String) request.getParameter("state");
 	if ( state == null || state.equals("") )
 		state = "-1";
-
-	// Force All states if row_dim = 1
-	if (row_dim == 1) {
-		state = "-1";
-	}
 	
 	String catid = (String) request.getParameter("catid");
 	if ( catid == null || catid.equals("") )
@@ -120,7 +115,7 @@
 		}
 		%>
 		<% while (rs.next()) { %>
-    	<option value="<%=rs.getInt("id")%>" <%=state.equals(rs.getInt("id"))?"selected":"" %>><%=rs.getString("name")%></option>
+    	<option value="<%=rs.getInt("id")%>" <%=state.equals(rs.getString("id"))?"selected":"" %>><%=rs.getString("name")%></option>
 		<% } %>
 	</select><br>
 <b>Product Category: </b>
@@ -134,7 +129,7 @@
 		}
 		%>
 		<% while (rs.next()) { %>
-    	<option value="<%=rs.getInt("id")%>" <%=catid.equals(rs.getInt("id"))?"selected":"" %>><%=rs.getString("name")%></option>
+    	<option value="<%=rs.getInt("id")%>" <%=catid.equals(rs.getString("id"))?"selected":"" %>><%=rs.getString("name")%></option>
 		<% } %>
  	</select><br>
 <b>Quarter: </b>
