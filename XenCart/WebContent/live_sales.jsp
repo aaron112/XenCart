@@ -35,6 +35,10 @@ setInterval(function(){makeRequest();}, 2000);</script>
 				"states.id = users.state AND products.category = categories.id AND users.id = sales.customer_id "+
 				"GROUP BY states.id, categories.id ORDER BY categories.name, states.id");
 %>
+<div id="connection_lost" style="display: none;">
+<p style="color:red">Connection to Server Lost!</p>
+</div>
+
 <%-- Table showing the data --%>
 <table border = "1" width = "99%">
 <tr><th>Categories\States</th>

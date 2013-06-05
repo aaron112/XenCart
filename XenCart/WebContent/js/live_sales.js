@@ -1,24 +1,22 @@
 var lastupdate = 0;		// Last updated "sales.id"
 
-function test()
-{
-	document.getElementById("32.4").textContent = "test";
-}
-
 function makeRequest(params, actionType, pid){
 	var xmlHttp = new XMLHttpRequest();	
 	
 	xmlHttp.onreadystatechange = function() {
 		
 		if (xmlHttp.readyState != 4) return;
-		
+
 		if (xmlHttp.status != 200) {
-			alert("HTTP status is " + xmlHttp.status + " instead of 200");
+			document.getElementById("connection_lost").style.display = "";
+			//alert("HTTP status is " + xmlHttp.status + " instead of 200");
 			return;
 		};
 		
 		var responseDoc = xmlHttp.responseText;
 		var responseLines = responseDoc.split("\n");
+		
+		document.getElementById("connection_lost").style.display = "none";
 		
 		if (responseLines[1] == "Not updated.")
 			return;
