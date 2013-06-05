@@ -12,14 +12,19 @@ String action = (String) request.getParameter("a");
 <% 	
 	
 
-	if(action.equals("purchase")) {
+	if(action.equals("purchase") && action!=null) {
 			
 			statement.executeUpdate(" INSERT into sales (product_id, customer_id, day, month, quantity, total_cost) "
 								+ 	"SELECT cart_entry.item, cart_entry.owner, EXTRACT(DAY FROM CURRENT_DATE), EXTRACT(MONTH FROM CURRENT_DATE), cart_entry.count, SUM(products.price * cart_entry.count) AS totalprice "
 								+	"FROM products, cart_entry "
 								+ 	"WHERE products.id = cart_entry.item AND cart_entry.owner = '"+user_id+"' "
 								+	"GROUP BY cart_entry.item, cart_entry.owner, cart_entry.count"
-								); }
+								); 
+			
+			statement.executeUpdate("INSERT into sales_today (state_id, category, total, date_purchased,  last_mod) "
+								+	"SELECT owner.state(?), product.category(?), sum(products.price * cart_entry.count), currdate, select extract(epoch from now());
+"
+					)}
 		
 		else {
 			

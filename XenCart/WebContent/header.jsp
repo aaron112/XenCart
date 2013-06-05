@@ -14,15 +14,31 @@ String user_state = "";
 
 if ( user_name != null ) {
 	try {
-		rs = statement.executeQuery("SELECT users.id, users.age, users.role, states.name FROM users, states WHERE users.state = states.id AND users.name = '"+user_name+"';");
+		rs = statement.executeQuery("SELECT users.id, users.role FROM users WHERE users.name = '"+user_name+"';");
+		//rs = statement.executeQuery("SELECT users.id, users.age, users.role, states.name FROM users, states WHERE users.state = states.id AND users.name = '"+user_name+"';");
 	} catch (SQLException e) {
 	    throw new RuntimeException(e);
 	}
 	if ( rs.next() ) {
 		user_id = rs.getInt("id");
-		user_age = rs.getInt("age");
+		//user_age = rs.getInt("age");
 		user_role = rs.getInt("role");
-		user_state = rs.getString("name");
+		//user_state = rs.getString("name");
+		
+		if (user_role == 2)
+		{ out.println("Customer");
+			try {
+				rs = statement.executeQuery("SELECT users.age, states.name FROM users, states WHERE users.state = states.id AND users.name = '"+user_name+"';");
+			}
+			catch (SQLException e) {
+				throw new RuntimeException(e);
+			}
+			if (rs.next()){
+			user_age = rs.getInt("age");
+			user_state = rs.getString("name");
+
+			}
+		}
 	} else {
 		// Incorrect user name!
 		user_name = null;
@@ -88,6 +104,9 @@ table td, table th { border-width: 1px;
 	background-color: white;
 	-moz-border-radius: }
 </style>
+
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<script type="text/javascript" src="live.js"></script>
 </head>
 <body>
 <h1>XenCart</h1>
