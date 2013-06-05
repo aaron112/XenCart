@@ -50,6 +50,7 @@ setInterval(function(){makeRequest();}, 2000);</script>
 <%
 		int last_cat = -1;
 		int last_state = 0, this_state;
+		int this_cat;
 		while (rs.next()) {
 			if ( rs.getInt(1) != last_cat ) {
 				if ( last_cat != -1 ) {
@@ -70,15 +71,15 @@ setInterval(function(){makeRequest();}, 2000);</script>
 			this_state = rs.getInt(3);
 			while (last_state < (this_state-1)) {
 				++last_state;
-				out.println("<td><span id=\""+rs.getInt(1)+"."+last_state+"\"></span></td>");
+				out.println("<td><span id=\""+last_cat+"."+last_state+"\"></span></td>");
 			}
-			out.println("<td><span id=\""+rs.getInt(1)+"."+this_state+"\">$"+rs.getString(4)+"</span></td>");
+			out.println("<td><span id=\""+last_cat+"."+this_state+"\">$"+rs.getString(4)+"</span></td>");
 			
 			last_state = this_state;
 		}
 		while (last_state < 50) {
 			++last_state;
-			out.println("<td><span id=\""+rs.getInt(1)+"."+last_state+"\"></span></td>");
+			out.println("<td><span id=\""+last_cat+"."+last_state+"\"></span></td>");
 		}
 %>
 </tr>
