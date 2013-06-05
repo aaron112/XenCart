@@ -90,6 +90,7 @@ table td, table th { border-width: 1px;
 </style>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 <script type="text/javascript" src="js/live_sales.js"></script>
+<script type="text/javascript" src="js/signup.js"></script>
 </head>
 <body>
 <h1>XenCart</h1>
