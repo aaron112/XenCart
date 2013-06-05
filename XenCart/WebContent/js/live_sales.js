@@ -18,19 +18,17 @@ function makeRequest(params, actionType, pid){
 		
 		document.getElementById("connection_lost").style.display = "none";
 		
-		if (responseLines[1] == "Not updated.")
-			return;
-		
-		for (var i in responseLines) {
-			if ( i == 0 )
-				lastupdate = parseInt(responseLines[0]);
-			else {
-				var obj = JSON.parse(responseLines[i]);
-				console.log(obj.c);
-				document.getElementById(obj.c).textContent = "$"+obj.t;
+		try {
+			for (var i in responseLines) {
+				if ( i == 0 )
+					lastupdate = parseInt(responseLines[0]);
+				else {
+					var obj = JSON.parse(responseLines[i]);
+					console.log(obj.c);
+					document.getElementById(obj.c).textContent = "$"+obj.t;
+				}
 			}
-		  
-		}
+		} catch(err) {}
 	};
 	
 	// Send XHR request
