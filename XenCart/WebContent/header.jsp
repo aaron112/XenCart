@@ -88,6 +88,7 @@ table td, table th { border-width: 1px;
 	background-color: white;
 	-moz-border-radius: }
 </style>
+<script type="text/javascript" src="manproducts.js"></script>
 </head>
 <body>
 <h1>XenCart</h1>
