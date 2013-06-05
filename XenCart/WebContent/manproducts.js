@@ -1,3 +1,5 @@
+
+
 function updateRows(id, actionType) {
 	var params = new Array();
 	//var pid = null;
@@ -50,6 +52,36 @@ function insertRow()
 
 }
 
+function getCategories(catid)
+{
+	var xmlHttp=new XMLHttpRequest();
+	
+
+	
+	xmlHttp.onreadystatechange=function() {
+		if (xmlHttp.readyState != 4) return;
+		
+		if (xmlHttp.status != 200) {
+			alert("HTTP status is " + xmlHttp.status + " instead of 200");
+			return;
+		};
+
+		var responseDoc = xmlHttp.responseText;
+		var response = eval('(' + responseDoc + ')');
+		var ret = "";
+		for(var counter = 0 ; counter < response.len ; counter++)
+		{
+			ret += '<option value="'+counter+'" '+(counter===catid?"selected":"")+'>'+response[counter]+'</option>';
+		}
+		return ret;
+	};
+	
+	// Send XHR request
+	var url="process_ajax.jsp?a=categories";
+	xmlHttp.open("GET",url,true);
+	xmlHttp.send(null);
+}
+
 
 function makeRequest(params, actionType, pid){
 	var xmlHttp=new XMLHttpRequest();	
@@ -98,16 +130,16 @@ function makeRequest(params, actionType, pid){
 					var table = document.getElementById("table");
 
 					var row = table.insertRow(table.rows.length);
-
+					var cat = getCategories(response.catid);
+					alert(cat);
 					var html = '<td> <input id="id_"'+response.pid+'" type="hidden" value="'+response.pid+'" name="id"/>'+response.pid+'</td>' +
 		        			   '<td> <input id = "sku_'+response.pid+'" value="'+response.sku+'" name="sku"/></td>' +
 		        			   '<td> <input id = "proname_'+response.pid+'" value="'+response.proname+'" name="proname"/></td>' +
-		        			   '<td> </td>' +
+		        			   '<td> <select id = "catid_'+response.pid+'" name="catid">'+ret+'</select></td>' +
 		        			   '<td> $<input id = "price_'+response.pid+'" value="'+response.price+'" name="price"/></td>' +
 		        			   '<td> <input type="button" value="UPDATE" onClick="updateRows('+response.pid+', \'UPDATE\');">' +
 		        			   '<input type="button" value="DELETE" onClick="updateRows('+response.pid+', \'DELETE\');"></td>';
-
-
+					alert(html);
 					row.innerHTML = html;
 					document.getElementById('response').innerHTML = response.print;
 				}

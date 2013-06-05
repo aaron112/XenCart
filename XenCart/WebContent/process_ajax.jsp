@@ -168,4 +168,16 @@
 			proname = null;
 
 	}
+	if(action != null && action.equals("categories"))
+	{
+		int len = 0;
+		for (Map.Entry<Integer, String> entry : categories.entrySet()) {
+  			result.put(entry.getKey(), entry.getValue());
+  			len++;
+  		}
+		result.put("len",len);
+		result.put("success", true);
+		out.print(result);
+		out.flush();
+	}
 %>
