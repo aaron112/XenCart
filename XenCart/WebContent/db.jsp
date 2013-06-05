@@ -1,5 +1,4 @@
-<%@ page import="java.sql.*"%>
-<%
+<%@ page import="java.sql.*" %><%
 	final String sqlhost = "127.0.0.1";
 	final String sqluser = "xencart";
 	final String sqlpw = "xencart";
@@ -15,10 +14,8 @@
 	    Class.forName("org.postgresql.Driver");
 	
 	    // Open a connection to the database using DriverManager
-	    conn = DriverManager.getConnection(
-	        "jdbc:postgresql://"+sqlhost+"/"+sqldb+"?" +
-	        "user="+sqluser+"&password="+sqlpw);
-
+	    conn = DriverManager.getConnection("jdbc:postgresql://"+sqlhost+"/"+sqldb+"?user="+sqluser+"&password="+sqlpw);
+	    
 		// Create the statement
 		statement = conn.createStatement();
 		

@@ -88,6 +88,8 @@ table td, table th { border-width: 1px;
 	background-color: white;
 	-moz-border-radius: }
 </style>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="js/live_sales.js"></script>
 </head>
 <body>
 <h1>XenCart</h1>
@@ -100,7 +102,8 @@ Welcome, <%=user_name==null?"Guest":user_name%>!
 <b><a href="login.jsp?a=logout">Logout</a> | </b>
 <b><a href="man_categories.jsp">Manage Categories</a></b> |
 <b><a href="man_products.jsp">Manage Products</a></b> |
-<b><a href="dashboard.jsp">Sales Analytics</a></b>
+<b><a href="dashboard.jsp">Sales Analytics</a></b> |
+<b><a href="live_sales.jsp">Live Sales (Today)</a></b>
 <% } else { %>
 <b><a href="login.jsp?a=logout">Logout</a> | </b>
 <b><a href="products.jsp">Browse Products</a></b> |
