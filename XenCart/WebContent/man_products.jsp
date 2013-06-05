@@ -1,6 +1,6 @@
 <% String page_title="Manage Products"; %>
 <%@include file="header.jsp" %>
-<%@page import="java.util.*" %>
+<%@page import="java.util.*, org.json.simple.JSONObject.*" %>
 <h2>Manage Products</h2>
 <%
 	//Parse the incoming parameters first
@@ -11,7 +11,7 @@
 	String sku = (String) request.getParameter("sku");
 	String price = (String) request.getParameter("price");
 	String submit = (String) request.getParameter("Submit");
-	String pid = (String) request.getParameter("pid");
+	String pid = (String) request.getParameter("id");
 	String pagenum = (String) request.getParameter("pg");
 	
 	LinkedHashMap<Integer, String> categories = new LinkedHashMap<Integer, String>();
@@ -80,7 +80,8 @@
 						if(price != null && Double.parseDouble(price) >= 0)
 							try {
 								statement.executeUpdate("UPDATE products SET name='"+proname+"', sku='"+sku+"', category= '"+catid+"', price='"+price+"' WHERE id = '"+pid+"'");
-								%><p style="color:green">Product <%=proname %> UPDATED.</p><%
+								//response.getWriter().write("<p "+"style=\"color:green\">Product "+proname+" UPDATED.</p>");
+
 							} catch (SQLException e) {
 							// SQL Error - mostly because of duplicate category name
 							%><p style="color:red">UPDATE ERROR: Wrong category name!</p><%
@@ -121,6 +122,7 @@
 		}
 	
 %>
+<p id="response"></p>
 
 <%-- Big formatting table --%>
 <table width="99%"><tr><td valign="top">
@@ -137,12 +139,12 @@
 </td>
 <td>
 <%-- Form for owner to insert products --%>
-<form action="?a=insert" method="POST">
+<%--<form action="?a=insert" method="POST">--%>
 <fieldset><legend> Add a Product </legend>
-<b>Product Name: </b> <input type="text" name="proname" value=""><br>
-<b>Product SKU: </b> <input type="text" name="sku" value =""><br>
+<b>Product Name: </b> <input id="i_proname" type="text" name="proname" value=""><br>
+<b>Product SKU: </b> <input id="i_sku" type="text" name="sku" value =""><br>
 <b>Product Category: </b>
-	<select name = "catid">
+	<select id="i_catid" name = "catid">
 		<%
 		try {
 			rs = statement.executeQuery("SELECT name,id FROM categories ORDER BY id ASC");
@@ -154,10 +156,11 @@
     	<option value="<%=rs.getInt("id")%>"><%=rs.getString("name")%></option>
 		<% } %>
  	</select><br>
-<b>Price: </b><input type="text" name="price" value=""/><br>
-<input type="submit" name="Submit" value="Create Product">
+<b>Price: </b><input id="i_price" type="text" name="price" value=""/><br>
+<input type="button" value="Create Product" onClick="insertRow();">
+<%--<input type="submit" name="Submit" value="Create Product">--%>
 </fieldset>
-</form>
+<%-- </form> --%>
 </br>
 
 <%-- Form for searching a product --%>
@@ -189,7 +192,7 @@
     	catch(Exception e)
     	{
     		offset = 0;
-    		pg = 1;
+    		pg = 0;
     	}
     	
     	if ( (catid == null || catid.equals("")) && (proname == null || proname.equals("")) ) {
@@ -220,7 +223,8 @@
 	    
 %>
 	<%-- Tables showing the searched products --%>
-	<table border = "1" width = "99%">
+	<table id="table" border = "1" width = "99%">
+	<tbody id="tblbdy">
 		<tr>
 			<th>Product ID</th>
 			<th>SKU</th>
@@ -230,13 +234,13 @@
 			<th>Actions</th>
 		</tr>
 	<% while ( rs.next() ) { %>
-	<form action="?a=UPDATE" method="POST">
-		<tr>
-    		<td> <input type="hidden" value="<%=rs.getString("id")%>" name="pid"/><%=rs.getString("id")%></td>
-        	<td> <input value="<%=rs.getString("sku")%>" name="sku"/></td>
-        	<td> <input value="<%=rs.getString("name")%>" name="proname"/></td>
+	<%-- <form action="?a=UPDATE" method="POST">--%>
+		<tr id="row_<%=rs.getString("id") %>">
+    		<td> <input id="id_<%=rs.getString("id") %>" type="hidden" value="<%=rs.getString("id")%>" name="id"/><%=rs.getString("id")%></td>
+        	<td> <input id = "sku_<%=rs.getString("id")%>" value="<%=rs.getString("sku")%>" name="sku"/></td>
+        	<td> <input id = "proname_<%=rs.getString("id")%>" value="<%=rs.getString("name")%>" name="proname"/></td>
         	<td> 
-        		<select name="catid">
+        		<select id = "catid_<%=rs.getString("id")%>" name="catid">
         		<%
         		for (Map.Entry<Integer, String> entry : categories.entrySet()) {
         			%> <option value="<%=entry.getKey()%>" <%=entry.getKey()==rs.getInt("category")?"selected":"" %>><%=entry.getValue() %> <%
@@ -244,13 +248,13 @@
         		%>
 				</select>
         	</td>
-        	<td> $<input value="<%=rs.getString("price")%>" name="price"/></td>
+        	<td> $<input id = "price_<%=rs.getString("id")%>" value="<%=rs.getString("price")%>" name="price"/></td>
         	<td> 
-        		<input type="submit" value="UPDATE">
-        		<input type="button" value="DELETE" onClick="javascript:location.href='?a=DELETE&pid=<%=rs.getString("id")%>&proname=<%=rs.getString("name")%>'">
+        		<input type="button" value="UPDATE" onClick="updateRows(<%=rs.getString("id")%>, 'UPDATE');">
+        		<input type="button" value="DELETE" onClick="updateRows(<%=rs.getString("id")%>, 'DELETE');">
         	</td>
     	</tr>
-    </form>
+    <%-- </form>--%>
 	<%
 	}
 	%>
@@ -262,5 +266,5 @@
 	<%
    	}
 	%>
-</td></tr></table>
+</td></tr></tbody></table>
 <%@include file="footer.inc" %>

@@ -13,6 +13,11 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
+<<<<<<< HEAD
 	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/json-simple-1.1.1.jar"/>
+=======
+	<classpathentry kind="lib" path="C:/Users/FLL/git/CSE135/XenCart/WebContent/WEB-INF/lib/json_simple-1.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/FLL/git/CSE135/XenCart/WebContent/WEB-INF/lib/json-simple-1.1.1.jar"/>
+>>>>>>> refs/remotes/origin/feeell
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
