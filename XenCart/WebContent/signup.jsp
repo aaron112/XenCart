@@ -95,6 +95,6 @@ State: <select id = "state" name="state">
 <input type="submit" value="Submit"></b>
 
 </form> 
-
+<script>disable();</script>
 <% } %>
 <%@include file="footer.inc" %>	
