@@ -21,9 +21,7 @@ if ( user_name != null ) {
 	}
 	if ( rs.next() ) {
 		user_id = rs.getInt("id");
-		//user_age = rs.getInt("age");
 		user_role = rs.getInt("role");
-		//user_state = rs.getString("name");
 		
 		if (user_role == 2)
 		{ out.println("Customer");
@@ -106,6 +104,7 @@ table td, table th { border-width: 1px;
 </style>
 
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<script type="text/javascript" src="signup.js"></script>
 	<script type="text/javascript" src="live.js"></script>
 </head>
 <body>
