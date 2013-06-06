@@ -18,7 +18,7 @@
 				parsed_role = Integer.parseInt(role);
 				
 				if (parsed_role == 1) {
-					statement.executeUpdate("INSERT INTO users (name, role) VALUES ('"+username+"', '"+role+"')");
+					statement.executeUpdate("INSERT INTO users (name, role, state) VALUES ('"+username+"', '"+role+"', 1)");
 					showform = false;
 
 				}
