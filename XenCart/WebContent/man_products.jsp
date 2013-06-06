@@ -31,6 +31,26 @@
 		// Save result up to a HashMap
 		categories.put(rs.getInt("id"), rs.getString("name"));
 	}
+%>
+<script>
+<% 
+String cat_id_list_out = "var cat_id_list = [";
+String cat_name_list_out = "var cat_name_list = [";
+boolean first = true;
+for (Map.Entry<Integer, String> entry : categories.entrySet()) {
+	if (!first) {
+		cat_id_list_out += ", ";
+		cat_name_list_out += ", ";
+	}
+	cat_id_list_out += ""+entry.getKey()+"";
+	cat_name_list_out += "\""+entry.getValue()+"\"";
+	first = false;
+}
+out.println( cat_id_list_out + "];" );
+out.println( cat_name_list_out + "];" );
+%>
+</script>
+<%
 	
 	//When the owner wants to insert a new product
 	if(action != null && action.equals("insert")) {
@@ -140,6 +160,7 @@
 <td>
 <%-- Form for owner to insert products --%>
 <%--<form action="?a=insert" method="POST">--%>
+<%--
 <fieldset><legend> Add a Product </legend>
 <b>Product Name: </b> <input id="i_proname" type="text" name="proname" value=""><br>
 <b>Product SKU: </b> <input id="i_sku" type="text" name="sku" value =""><br>
@@ -158,8 +179,7 @@
  	</select><br>
 <b>Price: </b><input id="i_price" type="text" name="price" value=""/><br>
 <input type="button" value="Create Product" onClick="insertRow();">
-<%--<input type="submit" name="Submit" value="Create Product">--%>
-</fieldset>
+</fieldset>--%>
 <%-- </form> --%>
 </br>
 
@@ -180,7 +200,7 @@
     	// Build Query
     	boolean criteriaSpecified = false;
     	int offset = 0, pg = 0;
-    	String sqlquery = "SELECT * FROM products ";
+    	String sqlquery = "SELECT *, ( SELECT count(*) FROM sales WHERE products.id = sales.product_id ) AS count FROM products ";
     	
     	try
     	{
@@ -212,7 +232,7 @@
 			    sqlquery += "LOWER(name) LIKE '%"+proname.toLowerCase()+"%'";
 		    }
 	    }
-	    sqlquery += " ORDER BY id ASC LIMIT "+LIMIT+" OFFSET "+offset;
+	    sqlquery += " ORDER BY id DESC LIMIT "+LIMIT+" OFFSET "+offset;
 	   
 	    try {
 	    	rs = statement.executeQuery(sqlquery);
@@ -233,12 +253,33 @@
 			<th>Unit Price</th>
 			<th>Actions</th>
 		</tr>
+		
+    <!-- Insert Row begin -->
+    <tr id="row_new">
+    	<th> NEW </th>
+        <td> <input id = "sku_new" value="" name="sku_new"/></td>
+        <td> <input id = "proname_new" value="" name="proname_new" size="32"/></td>
+        <td> 
+        	<select id = "catid_new" name="catid_new">
+        	<%
+        	for (Map.Entry<Integer, String> entry : categories.entrySet()) {
+        		%> <option value="<%=entry.getKey()%>"><%=entry.getValue() %> <%
+        	}
+        		%>
+			</select>
+        </td>
+        <td> $<input id = "price_new" value="" name="price_new" size="8"/></td>
+        <td> 
+        	<input type="button" value="INSERT" onClick="insertRow();">
+        </td>
+    </tr>
+    <!-- Insert Row end -->
+    
 	<% while ( rs.next() ) { %>
-	<%-- <form action="?a=UPDATE" method="POST">--%>
 		<tr id="row_<%=rs.getString("id") %>">
     		<td> <input id="id_<%=rs.getString("id") %>" type="hidden" value="<%=rs.getString("id")%>" name="id"/><%=rs.getString("id")%></td>
         	<td> <input id = "sku_<%=rs.getString("id")%>" value="<%=rs.getString("sku")%>" name="sku"/></td>
-        	<td> <input id = "proname_<%=rs.getString("id")%>" value="<%=rs.getString("name")%>" name="proname"/></td>
+        	<td> <input id = "proname_<%=rs.getString("id")%>" value="<%=rs.getString("name")%>" name="proname" size="32"/></td>
         	<td> 
         		<select id = "catid_<%=rs.getString("id")%>" name="catid">
         		<%
@@ -248,13 +289,13 @@
         		%>
 				</select>
         	</td>
-        	<td> $<input id = "price_<%=rs.getString("id")%>" value="<%=rs.getString("price")%>" name="price"/></td>
+        	<td> $<input id = "price_<%=rs.getString("id")%>" value="<%=rs.getString("price")%>" name="price" size="8"/></td>
         	<td> 
         		<input type="button" value="UPDATE" onClick="updateRows(<%=rs.getString("id")%>, 'UPDATE');">
-        		<input type="button" value="DELETE" onClick="updateRows(<%=rs.getString("id")%>, 'DELETE');">
+        		<input type="button" value="DELETE" <%=(rs.getInt("count")>0)?"disabled":"onClick=\"updateRows("+rs.getString("id")+", 'DELETE');\"" %>>
         	</td>
     	</tr>
-    <%-- </form>--%>
+    	
 	<%
 	}
 	%>

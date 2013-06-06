@@ -1,6 +1,4 @@
-<%@include file="../db.jsp" %>
-<%@page import="java.util.*, org.json.simple.JSONObject, java.text.*" %>
-<%
+<%@include file="../db.jsp" %><%@page import="java.util.*, org.json.simple.JSONObject, java.text.*" %><%
 	String action = (String) request.getParameter("a");
 	String proname = (String) request.getParameter("proname");
 	String catid = (String) request.getParameter("catid");
@@ -28,7 +26,7 @@
 		categories.put(rs.getInt("id"), rs.getString("name"));
 	}
 
-	if(action != null && action.equals("insert")) {
+	if(action != null && action.equals("INSERT")) {
 		//check product name
 		if(proname != null && !proname.equals("")) {
 			//check sku
@@ -39,7 +37,7 @@
 					statement.executeUpdate("INSERT INTO products (name, sku, category, price) VALUES ('"+proname+"', '"+sku+"', '"+catid+"','"+price+"')");
 					rs = statement.executeQuery("SELECT id FROM products WHERE name = '"+proname+"'");
 					DecimalFormat df = new DecimalFormat("#.00");
-					result.put("print", "<p "+"style=\"color:green\">Product "+proname+" CREATED.<br/> SKU: "+sku+"<br/> Category: "+categories.get(Integer.parseInt(catid))+"<br/>Price: "+price+"</p>");
+					result.put("print", "Product "+proname+" CREATED.\n SKU: "+sku+"\n Category: "+categories.get(Integer.parseInt(catid))+"\nPrice: "+price);
 					result.put("proname", proname);
 					result.put("sku", sku);
 					result.put("price", (String) df.format(Double.parseDouble(price)));
@@ -55,27 +53,27 @@
 					} catch (SQLException e) {
 						// SQL Error - mostly because of duplicate category name
 
-						result.put("print", "<p "+"style=\"color:red\">INSERT ERROR: Duplicate product name!</p>");
-						result.put("success", true);
+						result.put("print", "INSERT ERROR: Duplicate product name or SKU!");
+						result.put("success", false);
 						result.put("error", e.toString());
 						out.print(result);
 						out.flush();
 					}
 				} else { 
-					result.put("print", "<p "+"style=\"color:red\">INSERT ERROR: Price error!</p>");
-					result.put("success", true);
+					result.put("print", "INSERT ERROR: Price error!");
+					result.put("success", false);
 					out.print(result);
 					out.flush();
 				}
 			} else {						
-				result.put("print", "<p "+"style=\"color:red\">INSERT ERROR: SKU error!</p>");
-				result.put("success", true);
+				result.put("print", "INSERT ERROR: SKU error!");
+				result.put("success", false);
 				out.print(result);
 				out.flush();
 			}
 		} else {
-			result.put("print", "<p "+"style=\"color:red\">INSERT ERROR: Product name error!</p>");
-			result.put("success", true);
+			result.put("print", "INSERT ERROR: Product name error!");
+			result.put("success", false);
 			out.print(result);
 			out.flush();
 		}
@@ -100,7 +98,7 @@
 							statement.executeUpdate("UPDATE products SET name='"+proname+"', sku='"+sku+"', category= '"+catid+"', price='"+price+"' WHERE id = '"+pid+"'");
 							
 							DecimalFormat df = new DecimalFormat("#.00");
-							result.put("print", "<p "+"style=\"color:green\">Product "+proname+" UPDATED.</p>");
+							result.put("print", "Product "+proname+" UPDATED.");
 							result.put("proname", proname);
 							result.put("sku", sku);
 							result.put("price", (String) df.format(Double.parseDouble(price)));
@@ -110,14 +108,14 @@
 							out.flush();
 						} catch (SQLException e) {
 						// SQL Error - mostly because of duplicate category name
-							result.put("print", "<p "+"style=\"color:red\">Wrong category name!</p>");
+							result.put("print", "Wrong category name!");
 							result.put("success", true);
 							out.print(result);
 							out.flush();
 						}
 					else
 					{
-						result.put("print", "<p "+"style=\"color:red\">UPDATE ERROR: Price error!</p>");
+						result.put("print", "UPDATE ERROR: Price error!");
 						result.put("success", true);
 						out.print(result);
 						out.flush();
@@ -126,7 +124,7 @@
 				}
 				else
 				{
-					result.put("print", "<p "+"style=\"color:red\">UPDATE ERROR: SKU error!</p>");
+					result.put("print", "UPDATE ERROR: SKU error!");
 					result.put("success", true);
 					out.print(result);
 					out.flush();
@@ -134,7 +132,7 @@
 			}
 			else
 			{
-				result.put("print", "<p "+"style=\"color:red\">UPDATE ERROR: Product name error!</p>");
+				result.put("print", "UPDATE ERROR: Product name error!");
 				result.put("success", true);
 				out.print(result);
 				out.flush();
@@ -149,7 +147,7 @@
 			statement.executeUpdate("DELETE FROM cart_entry WHERE item = '"+pid+"'");
 			statement.executeUpdate("DELETE FROM products WHERE id = '"+pid+"'");
 
-			result.put("print", "<p "+"style=\"color:green\">Product "+proname+" DELETED.</p>");
+			result.put("print", "Product "+proname+" DELETED.");
 			result.put("success", true);
 			result.put("deleted", true);
 			out.print(result);
@@ -157,8 +155,8 @@
 				
 			} catch (SQLException e) {
 			// SQL Error - mostly because of duplicate category name
-			result.put("print", "<p "+"style=\"color:red\">DELETE ERROR: Product ID "+pid+" not found!</p>");
-			result.put("success", true);
+			result.put("print", "DELETE ERROR: Product does not exist or still referenced by a slaes record.");
+			result.put("success", false);
 			result.put("deleted", false);
 			out.print(result);
 			out.flush();
@@ -168,16 +166,13 @@
 			proname = null;
 
 	}
-	if(action != null && action.equals("categories"))
+	if(action != null && action.equals("GET_CATEGORIES"))
 	{
-		int len = 0;
 		for (Map.Entry<Integer, String> entry : categories.entrySet()) {
-  			result.put(entry.getKey(), entry.getValue());
-  			len++;
+  			result.put("cid", entry.getKey());
+  			result.put("cname", entry.getValue());
+  			out.println(result);
   		}
-		result.put("len",len);
-		result.put("success", true);
-		out.print(result);
 		out.flush();
 	}
 %>
